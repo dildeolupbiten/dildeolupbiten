@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "view.html" %}
+    {% block comment_block %}
+        <script>
+            init_card();
+            init_comments();
+        </script>
+    {% endblock comment_block %}
+{% endblock content %}

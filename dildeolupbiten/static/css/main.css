@@ -1,0 +1,35 @@
+a, button {
+    text-decoration: none !important;
+}
+
+.img-fluid {
+    border-radius: 50%;
+}
+
+article {
+    border: 0.1px solid #cccccc;
+    margin: 10px;
+    padding: 10px;
+}
+
+.article-group {
+    padding: 10px;
+}
+
+.article-author-info {
+    display: inline-block;
+    vertical-align:middle;
+}
+
+.article-group-link {
+    text-decoration: none !important;
+    color: #999999;
+}
+
+#read-more:hover {
+    color: #333333;
+}
+
+#title {
+    color: #000000;
+}
