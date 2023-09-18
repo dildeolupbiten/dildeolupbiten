@@ -73,7 +73,6 @@ def article(article_title):
         "articles/article.html",
         title=a.title,
         articles=[a],
-        current_user=current_user,
         primary_id=a.id
     )
 
