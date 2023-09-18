@@ -96,12 +96,14 @@ class Card {
             var btn = document.createElement("button");
             btn.id = `btn-${i}-${this.secondary_id}`;
             btn.className = "btn btn-link";
+            btn.style.width = "5rem";
             var img = document.createElement("img");
             var filename = images[i];
             img.src = filename;
             img.alt = "";
             var span = document.createElement("span");
             span.id = `span-${i}-${this.secondary_id}`;
+            span.className = "badge";
             btn.append(img);
             btn.append(span);
             text_center.append(btn);
