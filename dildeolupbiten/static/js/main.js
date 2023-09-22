@@ -202,7 +202,6 @@ function like_dislike_comment(primary_id, select, value) {
         form.append("value", value);
         form.append("primary_id", primary_id);
         form.append("like_dislike", select);
-
         fetch(`/article/${title}`, {
             method: "POST",
             body: form
@@ -259,7 +258,6 @@ function update_comment(primary_id, secondary_id) {
             form.append("content", textarea.value);
             form.append("primary_id", primary_id);
             form.append("update", true);
-
             fetch(`/article/${title}`, {
                 method: "POST",
                 body: form
@@ -426,7 +424,6 @@ function search_article() {
     document.getElementById("search-article").onkeypress = function (e) {
         if (e.key == "Enter") {
             var title = document.getElementById("search-article").value;
-
             fetch(`/article/${title}`)
             .then(function(response) {
                 if (response.status === 200) {
