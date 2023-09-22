@@ -157,33 +157,41 @@ function add_comment(primary_id) {
         var form = new FormData();
         form.append("content", document.getElementById(`textarea-${primary_id}`).value);
         form.append("primary_id", primary_id);
-        form.append("add", true)
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.status === 200 && (xhr.readyState == XMLHttpRequest.DONE)) {
-                var comment = JSON.parse(xhr.responseText);
-                document.getElementById(`span-comments-${primary_id}`).innerHTML = `(${comment["total"]})`;
-                var card = new Card(
-                    primary_id=comment["primary_id"],
-                    secondary_id=comment["secondary_id"],
-                    content=comment["content"],
-                    src=comment["src"],
-                    href=comment["href"],
-                    date=comment["date"],
-                    username=comment["username"],
-                    like=comment["likes"],
-                    dislike=comment["dislikes"]
-                );
-                card.header();
-                card.body();
-                card.footer();
-                document.getElementById(`textarea-${comment["primary_id"]}`).value = "";
-                document.getElementById(`hidden-value-${comment["primary_id"]}-${comment["secondary_id"]}`).value = comment["hidden_value"];
-                document.getElementById(`btn-reply-${comment["primary_id"]}`).click();
+        form.append("add", true);
+        fetch(`/article/${title}`, {
+            method: "POST",
+            body: form
+        })
+        .then(function(response) {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw new Error("Request failed.");
             }
-        }
-        xhr.open("POST", `/article/${title}`, true);
-        xhr.send(form);
+        })
+        .then(function(comment) {
+            document.getElementById(`span-comments-${primary_id}`).innerHTML = `(${comment.total})`;
+            var card = new Card(
+                primary_id = comment.primary_id,
+                secondary_id = comment.secondary_id,
+                content = comment.content,
+                src = comment.src,
+                href = comment.href,
+                date = comment.date,
+                username = comment.username,
+                like = comment.likes,
+                dislike = comment.dislikes
+            );
+            card.header();
+            card.body();
+            card.footer();
+            document.getElementById(`textarea-${comment.primary_id}`).value = "";
+            document.getElementById(`hidden-value-${comment.primary_id}-${comment.secondary_id}`).value = comment.hidden_value;
+            document.getElementById(`btn-reply-${comment.primary_id}`).click();
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
     }
 }
 
@@ -194,22 +202,32 @@ function like_dislike_comment(primary_id, select, value) {
         form.append("value", value);
         form.append("primary_id", primary_id);
         form.append("like_dislike", select);
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.status === 200 && (xhr.readyState == XMLHttpRequest.DONE)) {
-                var like = JSON.parse(xhr.responseText).like;
-                var dislike = JSON.parse(xhr.responseText).dislike;
-                for (var i of [[like, "like"], [dislike, "dislike"]]) {
-                    if (i[0] == 0) {
-                        document.getElementById(`span-${i[1]}-${primary_id}`).innerHTML = "";
-                    } else {
-                        document.getElementById(`span-${i[1]}-${primary_id}`).innerHTML = "(" + i[0] + ")";
-                    }
+
+        fetch(`/article/${title}`, {
+            method: "POST",
+            body: form
+        })
+        .then(function(response) {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw new Error("Request failed.");
+            }
+        })
+        .then(function(data) {
+            var like = data.like;
+            var dislike = data.dislike;
+            for (var i of [[like, "like"], [dislike, "dislike"]]) {
+                if (i[0] == 0) {
+                    document.getElementById(`span-${i[1]}-${primary_id}`).innerHTML = "";
+                } else {
+                    document.getElementById(`span-${i[1]}-${primary_id}`).innerHTML = "(" + i[0] + ")";
                 }
             }
-        }
-        xhr.open("POST", `/article/${title}`, true);
-        xhr.send(form);
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
     }
 }
 
@@ -240,20 +258,30 @@ function update_comment(primary_id, secondary_id) {
             var form = new FormData();
             form.append("content", textarea.value);
             form.append("primary_id", primary_id);
-            form.append("update", true)
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.status === 200 && (xhr.readyState == XMLHttpRequest.DONE)) {
-                    content.innerHTML = JSON.parse(xhr.responseText).content;
-                    hidden_value.value = JSON.parse(xhr.responseText).hidden_value;
-                    hidden.style.display = "none";
-                    content.style.display = "block";
-                    btn_update.innerHTML = "Update";
-                    active = false;
+            form.append("update", true);
+
+            fetch(`/article/${title}`, {
+                method: "POST",
+                body: form
+            })
+            .then(function(response) {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error("Request failed.");
                 }
-            }
-            xhr.open("POST", `/article/${title}`, true);
-            xhr.send(form);
+            })
+            .then(function(data) {
+                content.innerHTML = data.content;
+                hidden_value.value = data.hidden_value;
+                hidden.style.display = "none";
+                content.style.display = "block";
+                btn_update.innerHTML = "Update";
+                active = false;
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
         }
     } catch (error) {
         return;
@@ -266,26 +294,34 @@ function delete_comment(primary_id) {
         btn.onclick = function (e) {
             var form = new FormData();
             form.append("primary_id", primary_id);
-            form.append("delete", true)
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.status === 200 && (xhr.readyState == XMLHttpRequest.DONE)) {
-                    var primary_id = JSON.parse(xhr.responseText).primary_id;
-                    var parent_id = JSON.parse(xhr.responseText).parent_id;
-                    var total = JSON.parse(xhr.responseText).total;
-                    document.getElementById(`card-header-${primary_id}`).remove();
-                    document.getElementById(`card-body-${primary_id}`).remove();
-                    document.getElementById(`card-footer-${primary_id}`).remove();
-                    if (total == 0) {
-                        document.getElementById(`span-comments-${parent_id}`).innerHTML = "";
-                    } else {
-                        document.getElementById(`span-comments-${parent_id}`).innerHTML = `(${total})`;
-                    }
-
+            form.append("delete", true);
+            fetch(`/article/${title}`, {
+                method: "POST",
+                body: form
+            })
+            .then(function(response) {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error("Request failed.");
                 }
-            }
-            xhr.open("POST", `/article/${title}`, true);
-            xhr.send(form);
+            })
+            .then(function(data) {
+                var primary_id = data.primary_id;
+                var parent_id = data.parent_id;
+                var total = data.total;
+                document.getElementById(`card-header-${primary_id}`).remove();
+                document.getElementById(`card-body-${primary_id}`).remove();
+                document.getElementById(`card-footer-${primary_id}`).remove();
+                if (total == 0) {
+                    document.getElementById(`span-comments-${parent_id}`).innerHTML = "";
+                } else {
+                    document.getElementById(`span-comments-${parent_id}`).innerHTML = `(${total})`;
+                }
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
         }
     } catch (error) {
         return;
@@ -362,37 +398,49 @@ function article_stats() {
 
 function init_comments() {
     var form = new FormData();
-    form.append("comments", true)
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.status === 200 && (xhr.readyState == XMLHttpRequest.DONE)) {
-            var comments = JSON.parse(xhr.responseText);
-            if (comments.length > 0) {
-                recursively_init_comments(comments, `${title}-secondary`)
-            }
-            article_stats(comments);
+    form.append("comments", true);
+    fetch(`/article/${title}`, {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
         }
-    }
-    xhr.open("POST", `/article/${title}`, true);
-    xhr.send(form);
+    })
+    .then(function(comments) {
+        if (comments.length > 0) {
+            recursively_init_comments(comments, `${title}-secondary`);
+        }
+        article_stats(comments);
+    })
+    .catch(function(error) {
+        alert(error);
+    });
 }
+
 
 function search_article() {
     document.getElementById("search-article").onkeypress = function (e) {
         if (e.key == "Enter") {
             var title = document.getElementById("search-article").value;
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE) {
-                    if (xhr.status != 404) {
-                        window.location.replace(`/article/${title}`);
-                    } else {
-                        alert(`No article found!`);
-                    }
+
+            fetch(`/article/${title}`)
+            .then(function(response) {
+                if (response.status === 200) {
+                    window.location.replace(`/article/${title}`);
+                } else if (response.status === 404) {
+                    alert("Article not found!");
+                } else {
+                    throw new Error("Request failed.");
                 }
-            }
-            xhr.open("GET", `/article/${title}`);
-            xhr.send();
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
         }
     }
 }
+
