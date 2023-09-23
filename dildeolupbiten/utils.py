@@ -5,13 +5,21 @@ import os
 from PIL import Image
 from markdown import markdown
 from flask_login import current_user
-from pygments.formatters.html import HtmlFormatter
 from flask import current_app, Response, json
+
+from pygments.formatters.html import HtmlFormatter
+from pygments.formatters import Terminal256Formatter
+from pygments.lexers import get_lexer_by_name, guess_lexer
+from pygments import highlight
 
 from dildeolupbiten.articles.models import Article
 from dildeolupbiten.comments.models import Comment
-
 from dildeolupbiten.likes_dislikes.models import LikeDislikeArticle, LikeDislikeComment
+
+
+def api_info(filename, url):
+    with open(filename, encoding="utf-8") as f:
+        return f.read().replace("/api/italian_verbs", url)
 
 
 def save_image(form, file, thumbnail):
@@ -29,6 +37,10 @@ def render(string):
         HtmlFormatter(style="default", full=True, cssclass="codehilite").get_style_defs(),
         "</style>"
     )
+
+
+def pygmentize(string):
+    return highlight(code=string, lexer=get_lexer_by_name("markdown"), formatter=Terminal256Formatter(style="material"))
 
 
 def count_attr(model, value):
@@ -208,3 +220,27 @@ def like_dislike_comment(request, db, article):
         "primary_id": request.form["primary_id"]
     }
     return Response(json.dumps(data), 200)
+
+
+def query(d: dict, keys: list):
+    def recursive_query(dct: dict, key: list):
+        result = {}
+        for k, v in dct.items():
+            if isinstance(v, dict):
+                sub = recursive_query(v, key)
+                if sub:
+                    result.update({k: sub})
+            if k in key:
+                result[k] = v
+        return result
+    return recursive_query(d, keys)
+
+
+def update(d: dict, sub_d: dict):
+    for key, value in d.items():
+        if key in sub_d:
+            for k in sub_d[key]:
+                d[key][k].update(sub_d[key][k])
+        if isinstance(value, dict):
+            update(value, sub_d)
+    return d
