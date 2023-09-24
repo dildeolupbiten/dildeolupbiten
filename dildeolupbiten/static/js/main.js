@@ -60,6 +60,8 @@ class Card {
         var container = document.createElement("div");
         container.id = `card-body-${this.secondary_id}`;
         container.className = "card-body container text-left border-left border-right";
+        container.style.overflow = "auto";
+        container.style.height = "20rem";
         var content = document.createElement("p");
         content.id = `content-${this.secondary_id}`
         content.innerHTML = this.content;
