@@ -204,6 +204,6 @@ Query a specific mood and a specific subject:
 
 Query with multiple values:
 
-- `/api/italian_verbs?data={"verb": ["essere", "avere"], "modality": ["indicativo", "congiuntivo"], "tense": ["presente", "imperfetto"]}`
+- `/api/italian_verbs?data={"verb": ["essere", "avere"], "tense": ["presente", "imperfetto"]}`
 
 Basically, as long as you write valid verbs, you can combine endpoints to get more specific conjugations of these verbs.

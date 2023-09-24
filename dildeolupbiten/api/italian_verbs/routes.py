@@ -22,7 +22,7 @@ def get():
                 return json.dumps(pygmentize(info))
             return render_template(
                 "api/italian_verbs/main.html",
-                title="Italian Verbs",
+                title="API - Italian Verbs",
                 api_main=lambda: render(info)
             )
     allowed_args = ["modality", "subject", "tense", "verb"]
