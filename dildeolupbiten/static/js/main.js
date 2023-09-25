@@ -109,7 +109,7 @@ class Card {
             img.alt = "";
             var span = document.createElement("span");
             span.id = `span-${i}-${this.secondary_id}`;
-            span.className = "badge";
+            span.className = "badge badge-dark";
             btn.append(img);
             btn.append(span);
             text_center.append(btn);
@@ -159,7 +159,7 @@ class Card {
 }
 
 class Article {
-    constructor(id, parent, title, description, article_img, article_href, date, author_img, author_href, author_name) {
+    constructor(id, parent, title, description, article_img, article_href, date, author_img, author_href, author_name, index) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -171,10 +171,19 @@ class Article {
         this.date = date;
         this.article = document.createElement("article");
         this.parent = parent;
+        this.index = index;
 
     }
     init() {
-        this.article.setAttribute("class", "container rounded mx-auto w-100 border bg-dark");
+
+        if (this.index == 2) {
+            this.article.setAttribute("class", "container w-100 bg-dark border-left border-right border-secondary");
+        } else if (this.index == 1) {
+            this.article.setAttribute("class", "container rounded-right w-100 bg-dark");
+        } else if (this.index == 3) {
+            this.article.setAttribute("class", "container rounded-left w-100 bg-dark");
+        }
+
         this.header();
         this.body();
         this.footer();
@@ -247,9 +256,10 @@ class Article {
 
 
 class Carousel {
-    constructor(id, articles) {
+    constructor(id, articles, parent) {
         this.id = id;
         this.articles = articles;
+        this.parent = parent;
     }
     init() {
         var div = document.createElement("div");
@@ -295,7 +305,8 @@ class Carousel {
                 this.articles[i].date,
                 this.articles[i].author_img,
                 this.articles[i].author_href,
-                this.articles[i].author_name
+                this.articles[i].author_name,
+                3 - i % 3
             );
             article.init();
             if (i % number == 0) {
@@ -325,7 +336,7 @@ class Carousel {
         }
         d_flex.append(carousel);
         div.append(d_flex);
-        document.body.append(div);
+        document.getElementById(this.parent).append(div);
     }
 }
 
@@ -344,7 +355,7 @@ function init_carousel() {
         }
     })
     .then(function(articles) {
-        var carousel = new Carousel(1, articles);
+        var carousel = new Carousel(1, articles, "articles");
         carousel.init();
     })
     .catch(function(error) {

@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;"><h2>{% block header %}{% endblock header %}</h2></div>
-    <div class="my-5" id="articles"></div>
-    <script>
-        init_carousel();
-    </script>
+    <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;">
+        <h2>{% block header %}{% endblock header %}</h2>
+    </div>
+    <div class="my-5" id="articles">
+        <script>
+            init_carousel();
+        </script>
+    </div>
+    <div class="d-block text-center bottom">
+        <button class="btn btn-secondary bg-dark" style="color:#999999;">Browse All Articles</button>
+    </div>
 {% endblock content %}
+
