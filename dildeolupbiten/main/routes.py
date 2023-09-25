@@ -13,7 +13,7 @@ def view():
     articles = get_all_articles()[:6]
     if "articles" in request.form:
         return Response(json.dumps(articles), 200)
-    return render_template('main/view.html')
+    return render_template('main/view.html', title="Home")
 
 
 @main.route("/all_articles", methods=["GET", "POST"])
@@ -21,7 +21,7 @@ def all_articles():
     articles = get_all_articles()
     if "all_articles" in request.form:
         return Response(json.dumps(articles), 200)
-    return render_template('main/list.html', title="Browse All Articles")
+    return render_template('main/list.html', title="All Articles")
 
 
 @main.route("/about")
