@@ -22,19 +22,22 @@ def api_info(filename, url):
         return f.read().replace("/api/italian_verbs", url)
 
 
-def save_image(form, file, thumbnail):
-    picture_path = os.path.join(current_app.root_path, "static/images", file.filename)
+def save_image(form, file, thumbnail, extra: str = ""):
+    filename = file.filename
+    filename, ext = os.path.splitext(filename)
+    filename += extra + ext
+    picture_path = os.path.join(current_app.root_path, "static/images", filename)
     img = Image.open(form.image.data)
-    img.thumbnail(thumbnail)
+    img = img.resize(thumbnail)
     img.save(picture_path)
-    return file.filename
+    return filename
 
 
 def render(string):
     return ("{}" * 4).format(
         markdown(string, extensions=["fenced_code", "codehilite"]),
         "<style>",
-        HtmlFormatter(style="default", full=True, cssclass="codehilite").get_style_defs(),
+        HtmlFormatter(style="material", full=True, cssclass="codehilite").get_style_defs(),
         "</style>"
     )
 

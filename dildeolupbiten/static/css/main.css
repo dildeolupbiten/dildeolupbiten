@@ -7,7 +7,6 @@ a, button {
 }
 
 article {
-    border: 0.1px solid #cccccc;
     margin: 10px;
     padding: 10px;
 }
@@ -32,4 +31,8 @@ article {
 
 #title {
     color: #000000;
+}
+
+body {
+    background-color: black;
 }

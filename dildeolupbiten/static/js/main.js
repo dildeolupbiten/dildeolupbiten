@@ -14,7 +14,7 @@ class Card {
     header() {
         var container = document.createElement("div");
         container.id = `card-header-${this.secondary_id}`;
-        container.className = "card card-header container text-center w-100 color-white";
+        container.className = "card card-header container text-center w-100";
         container.style.paddingBottom = "25px";
         var d_flex_justified = document.createElement("div");
         d_flex_justified.className = "d-flex justify-content-between";
@@ -23,7 +23,9 @@ class Card {
         var d_px1 = document.createElement("div");
         d_px1.className = "d-inline justify-content-between px-2";
         var img = document.createElement("img");
-        img.className = "img rounded img-thumbnail";
+        img.className = "img rounded img";
+        img.setAttribute("width", 30);
+        img.setAttribute("height", 30);
         img.src = this.src;
         var d_px2 = document.createElement("div");
         d_px2.className = "px-2"
@@ -33,6 +35,7 @@ class Card {
         var br = document.createElement("br");
         var small = document.createElement("small");
         small.innerHTML = this.date;
+        small.className = "text-light";
         var d_inline = document.createElement("div");
         d_inline.className = "d-inline";
         var btn_update = document.createElement("button");
@@ -59,7 +62,7 @@ class Card {
     body() {
         var container = document.createElement("div");
         container.id = `card-body-${this.secondary_id}`;
-        container.className = "card-body container text-left border-left border-right";
+        container.className = "card-body container text-left border-left border-right text-light";
         container.style.overflow = "auto";
         container.style.height = "20rem";
         var content = document.createElement("p");
@@ -90,9 +93,10 @@ class Card {
     footer() {
         var container = document.createElement("div");
         container.id = `card-footer-${this.secondary_id}`;
-        container.className = "card card-footer container text-center w-100 mb-2 bg-white";
+        container.className = "card card-footer container text-center w-100 mb-2 bg-dark rounded";
         container.style.paddingBottom = "25px";
         var text_center = document.createElement("div");
+        text_center.id = `text-center-${this.secondary_id}`;
         text_center.className = "text-center w-100";
         for (var i of ["like", "dislike", "reply", "comments"]) {
             var btn = document.createElement("button");
@@ -152,6 +156,200 @@ class Card {
         like_dislike_comment(this.secondary_id, "like", 1);
         like_dislike_comment(this.secondary_id, "dislike", -1);
     }
+}
+
+class Article {
+    constructor(id, parent, title, description, article_img, article_href, date, author_img, author_href, author_name) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.author_img = author_img;
+        this.author_href = author_href;
+        this.article_img = article_img;
+        this.article_href = article_href;
+        this.author_name = author_name;
+        this.date = date;
+        this.article = document.createElement("article");
+        this.parent = parent;
+
+    }
+    init() {
+        this.article.setAttribute("class", "container rounded mx-auto w-100 border bg-dark");
+        this.header();
+        this.body();
+        this.footer();
+        this.parent.append(this.article);
+    }
+    header() {
+        var main = document.createElement("div");
+        main.setAttribute("class", "article-group");
+        var justified = document.createElement("div");
+        justified.setAttribute("class", "justify-content-between");
+        var d_inline = document.createElement("div");
+        d_inline.setAttribute("class", "d-inline");
+        var div_img = document.createElement("div");
+        div_img.setAttribute("class", "article-author-info");
+        var author_img = document.createElement("img");
+        author_img.setAttribute("class", "img rounded");
+        author_img.setAttribute("width", 40);
+        author_img.setAttribute("height", 40);
+        author_img.setAttribute("src", this.author_img);
+        div_img.append(author_img);
+        var div_url = document.createElement("div");
+        div_url.setAttribute("class", "article-author-info px-1");
+        var author_url = document.createElement("a");
+        author_url.setAttribute("href", this.author_href);
+        author_url.innerHTML = this.author_name;
+        var br = document.createElement("br");
+        var small = document.createElement("small");
+        small.setAttribute("class", "text-secondary");
+        small.innerHTML = this.date;
+        div_url.append(author_url);
+        div_url.append(br);
+        div_url.append(small);
+        d_inline.append(div_img);
+        d_inline.append(div_url);
+        justified.append(d_inline);
+        main.append(justified);
+        this.article.append(main);
+    }
+    body() {
+        var main = document.createElement("div");
+        main.setAttribute("class", "article-group");
+        var a = document.createElement("a");
+        a.setAttribute("href", this.article_href);
+        var img = document.createElement("img");
+        img.setAttribute("width", "100%");
+        img.setAttribute("class", "rounded");
+        img.setAttribute("src", this.article_img);
+        a.append(img);
+        main.append(a);
+        this.article.append(main);
+    }
+    footer() {
+        var main = document.createElement("div");
+        main.setAttribute("class", "article-group");
+        var a = document.createElement("a");
+        a.setAttribute("class", "article-group-link");
+        a.setAttribute("href", this.article_href);
+        for (var i of [["h2", "#000000", this.title], ["p", "#666666", this.description]]) {
+            var item = document.createElement(i[0]);
+            item.setAttribute("class", "article-more");
+            item.style.color = i[1];
+            item.innerHTML = i[2];
+            a.append(item);
+        }
+        main.append(a);
+        this.article.append(main);
+    }
+}
+
+
+
+class Carousel {
+    constructor(id, articles) {
+        this.id = id;
+        this.articles = articles;
+    }
+    init() {
+        var div = document.createElement("div");
+        div.setAttribute("class", "d-flex justify-content-center");
+        var d_flex = document.createElement("div");
+        d_flex.setAttribute("class", "d-flex justify-content-center w-75");
+        var carousel = document.createElement("div");
+        carousel.id = this.id;
+        carousel.setAttribute("class", "carousel slide");
+        carousel.setAttribute("data-ride", "carousel");
+        var indicators = document.createElement("ol");
+        indicators.setAttribute("class", "carousel-indicators")
+        var inner = document.createElement("div");
+        inner.setAttribute("class", "carousel-inner");
+        var number = 3;
+        var length = this.articles.length;
+        for (var i = 0; i < number - length % number; i++) {
+            this.articles.push(this.articles[i]);
+        };
+        var length = this.articles.length;
+        for (var i = 0; i < length; i++) {
+            if (i % number == 0) {
+                var indicator = document.createElement("li");
+                indicator.setAttribute("data-target", `#{this.id}`);
+                indicator.setAttribute("data-slide-to", `${i}`);
+                var item = document.createElement("div");
+                item.id = `item${i}`;
+                item.setAttribute("class", "carousel-item");
+                var triple_content = document.createElement("div");
+                triple_content.setAttribute("class", "d-flex justify-content-between");
+                if (i == 0) {
+                    indicator.setAttribute("class", "active");
+                    item.className += " active";
+                }
+            }
+            var article = new Article(
+                i,
+                triple_content,
+                this.articles[i].title,
+                this.articles[i].description,
+                this.articles[i].article_img,
+                this.articles[i].article_href,
+                this.articles[i].date,
+                this.articles[i].author_img,
+                this.articles[i].author_href,
+                this.articles[i].author_name
+            );
+            article.init();
+            if (i % number == 0) {
+                item.append(triple_content);
+                indicators.append(indicator);
+                inner.append(item);
+            }
+        }
+        carousel.append(indicators);
+        carousel.append(inner);
+        for (var i of [["prev", "Previous"], ["next", "Next"]]) {
+            var button = document.createElement("a");
+            button.setAttribute("class", `carousel-control-${i[0]}`);
+            button.setAttribute("href", `#${this.id}`);
+            button.setAttribute("role", "button");
+            button.setAttribute("data-slide", i[0]);
+            button.style.width = "1.5rem";
+            var icon = document.createElement("span");
+            icon.setAttribute("class", `carousel-control-${i[0]}-icon`);
+            icon.setAttribute("aria-hidden", "true");
+            var sr_only = document.createElement("span");
+            sr_only.setAttribute("class", "sr-only");
+            sr_only.innerHTML = i[1];
+            button.append(icon);
+            button.append(sr_only);
+            carousel.append(button);
+        }
+        d_flex.append(carousel);
+        div.append(d_flex);
+        document.body.append(div);
+    }
+}
+
+function init_carousel() {
+    var form = new FormData();
+    form.append("articles", true);
+    fetch(`/home`, {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
+        }
+    })
+    .then(function(articles) {
+        var carousel = new Carousel(1, articles);
+        carousel.init();
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
 }
 
 function add_comment(primary_id) {

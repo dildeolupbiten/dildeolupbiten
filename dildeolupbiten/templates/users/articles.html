@@ -1,5 +1,2 @@
-{% extends "article_list.html" %}
-{% block text %}
-    Articles by {{ user.username }}
-{% endblock text %}
-
+{% extends "view.html" %}
+{% block header %}Articles by {{ user.username }}{% endblock header %}

@@ -26,7 +26,7 @@ def create():
             description=form.description.data,
             content=form.content.data,
             user=current_user,
-            image=save_image(form, request.files["image"], (600, 200))
+            image=save_image(form, request.files["image"], (600, 200), "article")
         )
         db.session.add(a)
         try:
@@ -72,8 +72,7 @@ def article(article_title):
     return render_template(
         "articles/article.html",
         title=a.title,
-        articles=[a],
-        primary_id=a.id
+        article=a,
     )
 
 
@@ -86,7 +85,7 @@ def update(article_title):
     form = ArticleUpdateForm()
     if form.validate_on_submit():
         if form.image.data:
-            a.image = save_image(form, request.files["image"], (600, 200))
+            a.image = save_image(form, request.files["image"], (600, 200), "article")
         a.title = form.title.data
         a.content = form.content.data
         a.description = form.description.data

@@ -1,10 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "view.html" %}
-    {% block comment_block %}
-        <script>
-            init_card();
-            init_comments();
-        </script>
-    {% endblock comment_block %}
+    <div class="p-4 text-center bg-dark" style="color: #999999;"><h2>{{ article.title }}</h2></div>
+    <div id="main-container" class="d-flex mx-auto">
+        <article id="article" class="container rounded mx-auto w-75 bg-dark text-light">
+            <div class="article-group bg-dark rounded">
+                <div class="justify-content-between">
+                    <div class="d-inline">
+                        <div class="article-author-info">
+                            <img class="rounded" width="30" height="30" src="{{ url_for('static', filename='images/' + article.user.image) }}">
+                        </div>
+                        <div class="article-author-info">
+                            <a href="{{ url_for('users.user_articles', username=article.user.username) }}">{{ article.user.username }}</a>
+                            <br>
+                            <small class="text-light">{{ article.date.strftime('%b %d, %Y').replace(" 0", " ") }}</small>
+                        </div>
+                    </div>
+                    {% if article.user == current_user %}
+                        <div class="d-inline float-right">
+                            <a class="btn btn-outline-secondary" href="{{ url_for('articles.update', article_title=article.title) }}">Update</a>
+                            <a class="btn btn-outline-secondary" href="{{ url_for('articles.delete_article', article_title=article.title) }}">Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="article-group bg-dark text-light">
+                    <img style="width: 100%;" class="rounded" src="{{ url_for('static', filename='images/' + article.image) }}">
+                </div>
+                <div class="article-group bg-dark text-light">
+                    <h2 style="color: #000000;" class="article-more"><b>{{ article.title }}</b></h2>
+                    <p style="color: #666666;" class="article-more">{{ article.description }}</p>
+                    {{ render(article.content)|safe }}
+                </div>
+            </div>
+        </article>
+    </div>
+    <script>
+        var article_like_count = parseInt("{{ count_attr(article, 1) }}");
+        var article_dislike_count = parseInt("{{ count_attr(article, -1) }}");
+        init_card();
+        init_comments();
+    </script>
 {% endblock content %}

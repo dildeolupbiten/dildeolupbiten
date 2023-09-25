@@ -1,76 +1,8 @@
-{% block header %}{% endblock header %}
-<div id="main-container" class="d-flex mx-auto">
-{% for i, article in enumerate(articles) %}
+{% extends "base.html" %}
+{% block content %}
+    <div class="p-4 text-center bg-dark" style="color: #999999;"><h2>{% block header %}{% endblock header %}</h2></div>
+    <div class="my-5" id="articles"></div>
     <script>
-        var article_like_count = parseInt("{{ count_attr(article, 1) }}");
-        var article_dislike_count = parseInt("{{ count_attr(article, -1) }}");
+        init_carousel();
     </script>
-    <article id="article" class="container rounded mx-auto w-25">
-        <div class="article-group">
-            <div class="justify-content-between">
-                <div class="d-inline">
-                    <div class="article-author-info">
-                        <img class="rounded" width="30" height="30" src="{{ url_for('static', filename='images/' + article.user.image) }}">
-                    </div>
-                    <div class="article-author-info">
-                        <a href="{{ url_for('users.user_articles', username=article.user.username) }}">{{ article.user.username }}</a>
-                        <br>
-                        <small>{{ article.date.strftime('%b %d, %Y').replace(" 0", " ") }}</small>
-                    </div>
-                </div>
-                {% if article.user == current_user %}
-                    {% if isinstance(articles, list) %}
-                        <div class="d-inline float-right">
-                            <a class="btn btn-outline-secondary" href="{{ url_for('articles.update', article_title=article.title) }}">Update</a>
-                            <a class="btn btn-outline-secondary" href="{{ url_for('articles.delete_article', article_title=article.title) }}">Delete</a>
-                        </div>
-                    {% endif %}
-                {% endif %}
-            </div>
-        </div>
-        <div class="article-group">
-            {% if not isinstance(articles, list) %}
-                <a href="{{ url_for('articles.article', article_title=article.title) }}">
-                    <img style="width: 100%;" class="rounded" src="{{ url_for('static', filename='images/' + article.image) }}">
-                </a>
-            {% else %}
-                <img style="width: 100%;" class="rounded" src="{{ url_for('static', filename='images/' + article.image) }}">
-            {% endif %}
-        </div>
-        <div class="article-group">
-            {% if not isinstance(articles, list) %}
-                <a class="article-group-link" href="{{ url_for('articles.article', article_title=article.title) }}">
-                    <h2 style="color: #000000;" class="article-more"><b>{{ article.title }}</b></h2>
-                    <p style="color: #666666;" class="article-more">{{ article.description }}</p>
-                </a>
-                <a class="article-group-link" id="read-more" href="{{ url_for('articles.article', article_title=article.title) }}">
-                    <p class="article-more"><small>Read more...</small></p>
-                </a>
-            {% else %}
-                <h2 style="color: #000000;" class="article-more"><b>{{ article.title }}</b></h2>
-                <p style="color: #666666;" class="article-more">{{ article.description }}</p>
-                {{ render(article.content)|safe }}
-            {% endif %}
-        </div>
-    </article>
-{% endfor %}
-</div>
-{% if isinstance(articles, list) %}
-    <script>
-        document.getElementById("article").className = "container rounded";
-    </script>
-{% endif %}
-<div class="text-center">
-{% if not isinstance(articles, list) %}
-    {% for page in articles.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-        {% if page %}
-            {% if articles.page == page %}
-              <a class="btn btn-secondary mb-4" href="{{ url_for('main.home', page=page) }}">{{ page }}</a>
-            {% else %}
-              <a class="btn btn-outline-secondary mb-4" href="{{ url_for('main.home', page=page) }}">{{ page }}</a>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-{% endif %}
-</div>
-{% block comment_block %}{% endblock comment_block %}
+{% endblock content %}
