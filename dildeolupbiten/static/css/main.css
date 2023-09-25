@@ -40,3 +40,7 @@ body {
 * {
   font-family: monospace;
 }
+
+a, a:hover {
+    color: #ffffff;
+}
