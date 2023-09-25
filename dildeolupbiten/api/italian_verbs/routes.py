@@ -21,7 +21,7 @@ def get():
             if "python" in request.headers["User-Agent"]:
                 return json.dumps(pygmentize(info))
             return render_template(
-                "api/italian_verbs/main.html",
+                "api/italian_verbs/get.html",
                 title="API - Italian Verbs",
                 api_main=lambda: render(info)
             )
