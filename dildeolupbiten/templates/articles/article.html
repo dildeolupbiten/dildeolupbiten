@@ -38,5 +38,6 @@
         var article_dislike_count = parseInt("{{ count_attr(article, -1) }}");
         init_card();
         init_comments();
+        document.getElementById("comments-{{ title }}").className += " mb-5";
     </script>
 {% endblock content %}
