@@ -109,7 +109,13 @@ class Card {
             img.alt = "";
             var span = document.createElement("span");
             span.id = `span-${i}-${this.secondary_id}`;
-            span.className = "badge badge-dark";
+            span.className = "badge badge-dark text-secondary";
+            span.onmouseover = function() {
+                this.className += " text-light";
+            }
+            span.onmouseleave = function() {
+                this.className = this.className.replace(" text-light", "");
+            }
             btn.append(img);
             btn.append(span);
             text_center.append(btn);
