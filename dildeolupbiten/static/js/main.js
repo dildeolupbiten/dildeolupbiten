@@ -525,7 +525,7 @@ function delete_comment(primary_id) {
 function init_card() {
     var div = document.createElement("div");
     div.id = `comments-${title}`;
-    div.className = "mb-5";
+    div.className = "mb-4";
     document.body.append(div);
     var card = new Card(
         primary_id=title,
@@ -651,7 +651,7 @@ function list_articles(articles) {
             row.className = "row";
         }
         var col = document.createElement("div");
-        col.className = "col-3";
+        col.className = "col-3 pb-4";
         var article = new Article(
             i,
             col,
