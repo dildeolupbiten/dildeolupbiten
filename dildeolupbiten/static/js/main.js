@@ -655,6 +655,42 @@ function search_article() {
     }
 }
 
+function list_articles(articles) {
+    var div = document.createElement("div");
+    div.className = "container bd-dark rounded my-4";
+    div.style.height = "40rem";
+    div.style.overflow = "auto";
+    div.style.backgroundColor = "black";
+    var length = articles.length;
+    for (var i = 0; i < length; i++) {
+        if (i % 3 == 0) {
+            var row = document.createElement("div");
+            row.className = "row";
+        }
+        var col = document.createElement("div");
+        col.className = "col-sm bg-dark border border-secondary";
+        var article = new Article(
+            i,
+            col,
+            articles[i].title,
+            articles[i].description,
+            articles[i].article_img,
+            articles[i].article_href,
+            articles[i].date,
+            articles[i].author_img,
+            articles[i].author_href,
+            articles[i].author_name,
+            0
+        )
+        article.init();
+        if (row) {
+            row.append(col);
+            div.append(row);
+        }
+    }
+    document.body.append(div);
+}
+
 function init_articles(url) {
     var form = new FormData();
     form.append("all_articles", true);
@@ -670,7 +706,7 @@ function init_articles(url) {
         }
     })
     .then(function(articles) {
-        return articles;
+        list_articles(articles);
     })
     .catch(function(error) {
         console.error(error);
