@@ -10,7 +10,7 @@ main = Blueprint("main", __name__)
 
 @main.route("/", methods=["GET", "POST"])
 def view():
-    articles = get_all_articles()
+    articles = get_all_articles()[:6]
     if "articles" in request.form:
         return Response(json.dumps(articles), 200)
     return render_template('main/view.html', articles=json.dumps(articles))

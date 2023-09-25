@@ -139,7 +139,7 @@ def reset_password(token):
 @users.route("/user/<string:username>")
 def view(username):
     user = User.query.filter_by(username=username).first_or_404()
-    articles = get_user_articles(user)
+    articles = get_user_articles(user)[:6]
     return render_template("users/view.html", articles=articles, user=user)
 
 

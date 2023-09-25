@@ -275,10 +275,13 @@ class Carousel {
         var inner = document.createElement("div");
         inner.setAttribute("class", "carousel-inner");
         var number = 3;
-        var length = this.articles.length;
-        for (var i = 0; i < number - length % number; i++) {
-            this.articles.push(this.articles[i]);
-        };
+        var max = 6;
+        var length = this.articles.length > max ? max : this.articles.length;
+        if (max != length) {
+            for (var i = 0; i < max - length; i++) {
+                this.articles.push(this.articles[i]);
+            };
+        }
         var length = this.articles.length;
         for (var i = 0; i < length; i++) {
             if (i % number == 0) {
