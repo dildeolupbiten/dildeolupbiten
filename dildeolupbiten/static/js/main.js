@@ -519,6 +519,7 @@ function delete_comment(primary_id) {
 function init_card() {
     var div = document.createElement("div");
     div.id = `comments-${title}`;
+    div.className = "mb-5";
     document.body.append(div);
     var card = new Card(
         primary_id=title,
