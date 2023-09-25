@@ -1,5 +1,5 @@
 {% extends "list.html" %}
-{% block header %}All Articles by {{ user.username }}{% endblock header %}
+{% block header %}All Articles By {{ user.username }}{% endblock header %}
 {% block init %}
     <script>
         init_articles("{{ url_for('users.view', username=user.username) }}/all_articles");

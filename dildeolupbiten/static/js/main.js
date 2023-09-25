@@ -159,7 +159,7 @@ class Card {
 }
 
 class Article {
-    constructor(id, parent, title, description, article_img, article_href, date, author_img, author_href, author_name, index) {
+    constructor(id, parent, title, description, article_img, article_href, date, author_img, author_href, author_name) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -171,19 +171,10 @@ class Article {
         this.date = date;
         this.article = document.createElement("article");
         this.parent = parent;
-        this.index = index;
 
     }
     init() {
-
-        if (this.index == 2) {
-            this.article.setAttribute("class", "container w-100 bg-dark border-left border-right border-secondary");
-        } else if (this.index == 1) {
-            this.article.setAttribute("class", "container rounded-right w-100 bg-dark");
-        } else if (this.index == 3) {
-            this.article.setAttribute("class", "container rounded-left w-100 bg-dark");
-        }
-
+        this.article.setAttribute("class", "container rounded w-100 bg-dark");
         this.header();
         this.body();
         this.footer();
@@ -274,33 +265,22 @@ class Carousel {
         indicators.setAttribute("class", "carousel-indicators")
         var inner = document.createElement("div");
         inner.setAttribute("class", "carousel-inner");
-        var number = 3;
-        var max = 6;
-        var length = this.articles.length > max ? max : this.articles.length;
-        if (max != length) {
-            for (var i = 0; i < max - length; i++) {
-                this.articles.push(this.articles[i]);
-            };
-        }
+        var length = this.articles.length;
         var length = this.articles.length;
         for (var i = 0; i < length; i++) {
-            if (i % number == 0) {
-                var indicator = document.createElement("li");
-                indicator.setAttribute("data-target", `#{this.id}`);
-                indicator.setAttribute("data-slide-to", `${i}`);
-                var item = document.createElement("div");
-                item.id = `item${i}`;
-                item.setAttribute("class", "carousel-item");
-                var triple_content = document.createElement("div");
-                triple_content.setAttribute("class", "d-flex justify-content-between");
-                if (i == 0) {
-                    indicator.setAttribute("class", "active");
-                    item.className += " active";
-                }
+            var indicator = document.createElement("li");
+            indicator.setAttribute("data-target", `#{this.id}`);
+            indicator.setAttribute("data-slide-to", `${i}`);
+            var item = document.createElement("div");
+            item.id = `item${i}`;
+            item.setAttribute("class", "carousel-item");
+            if (i == 0) {
+                indicator.setAttribute("class", "active");
+                item.className += " active";
             }
             var article = new Article(
                 i,
-                triple_content,
+                item,
                 this.articles[i].title,
                 this.articles[i].description,
                 this.articles[i].article_img,
@@ -309,14 +289,10 @@ class Carousel {
                 this.articles[i].author_img,
                 this.articles[i].author_href,
                 this.articles[i].author_name,
-                3 - i % 3
             );
             article.init();
-            if (i % number == 0) {
-                item.append(triple_content);
-                indicators.append(indicator);
-                inner.append(item);
-            }
+            indicators.append(indicator);
+            inner.append(item);
         }
         carousel.append(indicators);
         carousel.append(inner);
@@ -657,18 +633,18 @@ function search_article() {
 
 function list_articles(articles) {
     var div = document.createElement("div");
-    div.className = "container bd-dark rounded my-4";
+    div.className = "container my-4";
     div.style.height = "40rem";
     div.style.overflow = "auto";
     div.style.backgroundColor = "black";
     var length = articles.length;
     for (var i = 0; i < length; i++) {
-        if (i % 3 == 0) {
+        if (i % 4 == 0) {
             var row = document.createElement("div");
             row.className = "row";
         }
         var col = document.createElement("div");
-        col.className = "col-sm bg-dark border border-secondary";
+        col.className = "col-3";
         var article = new Article(
             i,
             col,
@@ -679,14 +655,11 @@ function list_articles(articles) {
             articles[i].date,
             articles[i].author_img,
             articles[i].author_href,
-            articles[i].author_name,
-            0
+            articles[i].author_name
         )
         article.init();
-        if (row) {
-            row.append(col);
-            div.append(row);
-        }
+        row.append(col);
+        div.append(row);
     }
     document.body.append(div);
 }
