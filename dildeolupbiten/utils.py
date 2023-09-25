@@ -249,33 +249,22 @@ def update(d: dict, sub_d: dict):
     return d
 
 
-def get_all_articles():
-    return [
-        {
-            "title": article.title,
-            "description": article.description,
-            "article_img": url_for("static", filename="images/" + article.image),
-            "article_href": url_for("articles.article", article_title=article.title),
-            "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
-            "author_img": url_for("static", filename="images/" + article.user.image),
-            "author_href": url_for("users.view", username=article.user.username),
-            "author_name": article.user.username
+def get_article_info(article):
+    return {
+        "title": article.title,
+        "description": article.description,
+        "article_img": url_for("static", filename="images/" + article.image),
+        "article_href": url_for("articles.article", article_title=article.title),
+        "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
+        "author_img": url_for("static", filename="images/" + article.user.image),
+        "author_href": url_for("users.view", username=article.user.username),
+        "author_name": article.user.username
+    }
 
-        } for article in Article.query.order_by(Article.date.desc())
-    ]
+
+def get_all_articles():
+    return [get_article_info(article) for article in Article.query.order_by(Article.date.desc())]
 
 
 def get_user_articles(user):
-    return [
-        {
-            "title": article.title,
-            "description": article.description,
-            "article_img": url_for("static", filename="images/" + article.image),
-            "article_href": url_for("articles.article", article_title=article.title),
-            "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
-            "author_img": url_for("static", filename="images/" + article.user.image),
-            "author_href": url_for("users.view", username=article.user.username),
-            "author_name": article.user.username
-
-        } for article in Article.query.filter_by(user=user).order_by(Article.date.desc())
-    ]
+    return [get_article_info(article) for article in Article.query.filter_by(user=user).order_by(Article.date.desc())]
