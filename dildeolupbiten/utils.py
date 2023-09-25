@@ -5,11 +5,11 @@ import os
 from PIL import Image
 from markdown import markdown
 from flask_login import current_user
-from flask import current_app, Response, json
+from flask import current_app, Response, json, url_for
 
 from pygments.formatters.html import HtmlFormatter
 from pygments.formatters import Terminal256Formatter
-from pygments.lexers import get_lexer_by_name, guess_lexer
+from pygments.lexers import get_lexer_by_name
 from pygments import highlight
 
 from dildeolupbiten.articles.models import Article
@@ -247,3 +247,35 @@ def update(d: dict, sub_d: dict):
         if isinstance(value, dict):
             update(value, sub_d)
     return d
+
+
+def get_all_articles():
+    return [
+        {
+            "title": article.title,
+            "description": article.description,
+            "article_img": url_for("static", filename="images/" + article.image),
+            "article_href": url_for("articles.article", article_title=article.title),
+            "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
+            "author_img": url_for("static", filename="images/" + article.user.image),
+            "author_href": url_for("users.view", username=article.user.username),
+            "author_name": article.user.username
+
+        } for article in Article.query.order_by(Article.date.desc())
+    ]
+
+
+def get_user_articles(user):
+    return [
+        {
+            "title": article.title,
+            "description": article.description,
+            "article_img": url_for("static", filename="images/" + article.image),
+            "article_href": url_for("articles.article", article_title=article.title),
+            "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
+            "author_img": url_for("static", filename="images/" + article.user.image),
+            "author_href": url_for("users.view", username=article.user.username),
+            "author_name": article.user.username
+
+        } for article in Article.query.filter_by(user=user).order_by(Article.date.desc())
+    ]

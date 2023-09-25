@@ -4,12 +4,11 @@ import os
 
 from flask_mail import Message
 from flask_login import login_user, current_user, logout_user, login_required
-from flask import redirect, url_for, request, flash, render_template, Blueprint
+from flask import redirect, url_for, request, flash, render_template, Blueprint, json
 
 from dildeolupbiten.users.models import User
-from dildeolupbiten.articles.models import Article
 from dildeolupbiten import bcrypt, db, mail
-from dildeolupbiten.utils import save_image
+from dildeolupbiten.utils import save_image, get_user_articles
 from dildeolupbiten.users.forms import LoginForm, RegistrationForm, AccountForm, RequestResetForm, ResetPasswordForm
 
 users = Blueprint("users", __name__)
@@ -18,13 +17,13 @@ users = Blueprint("users", __name__)
 @users.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.view"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for("main.home"))
+            return redirect(url_for("main.view"))
         else:
             flash("Login Unsuccessful. Please check email and password", "danger")
             return redirect(url_for("users.login"))
@@ -40,7 +39,7 @@ def login():
 @users.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.view"))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
@@ -61,7 +60,7 @@ def register():
 @users.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.view"))
 
 
 @users.route("/account", methods=["GET", "POST"])
@@ -91,7 +90,7 @@ def account():
 @users.route("/reset_password", methods=["GET", "POST"])
 def reset_request():
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.view"))
     form = RequestResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -116,7 +115,7 @@ def reset_request():
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.view"))
     user = User.verify_reset_token(token)
     if user is None:
         flash("That is an invalid or expired token", "warning")
@@ -138,11 +137,22 @@ def reset_password(token):
 
 
 @users.route("/user/<string:username>")
-def user_articles(username):
-    page = request.args.get("page", 1, type=int)
+def view(username):
     user = User.query.filter_by(username=username).first_or_404()
-    articles = Article.query.filter_by(user=user).order_by(Article.date.desc()).paginate(page=page, per_page=3)
-    return render_template("users/articles.html", articles=articles, user=user)
+    articles = get_user_articles(user)
+    return render_template("users/view.html", articles=articles, user=user)
+
+
+@users.route("/user/<string:username>/all_articles", methods=["GET", "POST"])
+def all_articles(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    articles = get_user_articles(user)
+    return render_template(
+        'users/list.html',
+        articles=json.dumps(articles),
+        title=f"Browse All Articles By {username}",
+        user=user
+    )
 
 
 @users.route("/user/<string:username>/delete", methods=["GET"])
@@ -152,4 +162,4 @@ def delete_user(username):
     db.session.delete(user)
     db.session.commit()
     flash("User has been deleted.", "success")
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.view"))

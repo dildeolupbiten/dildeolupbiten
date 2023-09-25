@@ -343,7 +343,7 @@ class Carousel {
 function init_carousel() {
     var form = new FormData();
     form.append("articles", true);
-    fetch(`/home`, {
+    fetch(`/`, {
         method: "POST",
         body: form
     })

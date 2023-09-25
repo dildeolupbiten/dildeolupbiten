@@ -10,7 +10,7 @@
                             <img class="rounded" width="30" height="30" src="{{ url_for('static', filename='images/' + article.user.image) }}">
                         </div>
                         <div class="article-author-info">
-                            <a href="{{ url_for('users.user_articles', username=article.user.username) }}">{{ article.user.username }}</a>
+                            <a href="{{ url_for('users.view', username=article.user.username) }}">{{ article.user.username }}</a>
                             <br>
                             <small class="text-light">{{ article.date.strftime('%b %d, %Y').replace(" 0", " ") }}</small>
                         </div>

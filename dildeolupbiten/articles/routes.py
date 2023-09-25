@@ -115,4 +115,4 @@ def delete_article(article_title):
     db.session.delete(a)
     db.session.commit()
     flash("Article has been deleted.", "success")
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.view"))
