@@ -4,7 +4,7 @@ import os
 
 from flask_mail import Message
 from flask_login import login_user, current_user, logout_user, login_required
-from flask import redirect, url_for, request, flash, render_template, Blueprint, json
+from flask import redirect, url_for, request, flash, render_template, Blueprint, json, Response
 
 from dildeolupbiten.users.models import User
 from dildeolupbiten import bcrypt, db, mail
@@ -140,16 +140,19 @@ def reset_password(token):
 def view(username):
     user = User.query.filter_by(username=username).first_or_404()
     articles = get_user_articles(user)[:6]
-    return render_template("users/view.html", articles=articles, user=user)
+    if "articles" in request.form:
+        return Response(json.dumps(articles), 200)
+    return render_template("users/view.html", user=user)
 
 
 @users.route("/user/<string:username>/all_articles", methods=["GET", "POST"])
 def all_articles(username):
     user = User.query.filter_by(username=username).first_or_404()
     articles = get_user_articles(user)
+    if "all_articles" in request.form:
+        return Response(json.dumps(articles), 200)
     return render_template(
         'users/list.html',
-        articles=json.dumps(articles),
         title=f"Browse All Articles By {username}",
         user=user
     )

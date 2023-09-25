@@ -655,3 +655,24 @@ function search_article() {
     }
 }
 
+function init_articles(url) {
+    var form = new FormData();
+    form.append("all_articles", true);
+    fetch(url, {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
+        }
+    })
+    .then(function(articles) {
+        return articles;
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
+}

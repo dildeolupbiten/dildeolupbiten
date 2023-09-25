@@ -1,2 +1,7 @@
 {% extends "list.html" %}
 {% block header %}All Articles{% endblock header %}
+{% block init %}
+    <script>
+        init_articles("/all_articles");
+    </script>
+{% endblock init %}
