@@ -653,7 +653,11 @@ function list_articles(articles) {
             row.className = "row";
         }
         var col = document.createElement("div");
-        col.className = "col-3 pb-4";
+        if (length < 4) {
+            col.className = "col-sm pb-4";
+        } else {
+            col.className = "col-3 pb-4";
+        }
         var article = new Article(
             i,
             col,

@@ -142,7 +142,7 @@ def view(username):
     articles = get_user_articles(user)[:6]
     if "articles" in request.form:
         return Response(json.dumps(articles), 200)
-    return render_template("users/view.html", user=user, title=username, articles=articles)
+    return render_template("users/view.html", user=user, title=username, exists=len(articles))
 
 
 @users.route("/user/<string:username>/all_articles", methods=["GET", "POST"])
