@@ -28,7 +28,10 @@
                 <div class="article-group bg-dark text-light">
                     <h2 style="color: #000000;" class="article-more"><b>{{ article.title }}</b></h2>
                     <p style="color: #666666;" class="article-more">{{ article.description }}</p>
-                    {{ render(article.content)|safe }}
+                    <div class="p-4 rounded" style="height: 50rem; overflow: auto; background-color: black;">
+                        {{ render(article.content)|safe }}
+                    </div>
+
                 </div>
             </div>
         </article>

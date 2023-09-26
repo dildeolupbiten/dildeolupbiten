@@ -2,10 +2,9 @@
 {% block content %}
     <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;"><h2>API - Italian Verbs</h2></div>
     <div class="d-flex justify-content-center my-4">
-        <div class="card overflow-auto p-5 bg-dark text-light" style="overflow: auto; height: 40rem;">
-            <div class="text-center bg-dark border-bottom border-secondary" style="color: #999999;"><h5>API - Italian Verbs</h5></div>
-            <div class="mt-2">{{ api_main()|safe }}</div>
+        <div class="card overflow-auto p-5 bg-dark text-light">
+            <div class="text-center bg-dark" style="color: #999999;"><h5>API - Italian Verbs</h5></div>
+            <div class="p-4 mt-2 rounded" style="background-color: black; overflow: auto; height: 35rem;">{{ api_main()|safe }}</div>
         </div>
     </div>
-
 {% endblock content %}

@@ -62,7 +62,8 @@ class Card {
     body() {
         var container = document.createElement("div");
         container.id = `card-body-${this.secondary_id}`;
-        container.className = "card-body container text-left border-left border-right text-light";
+        container.className = "card-body container text-left text-light";
+        container.style.backgroundColor = "black";
         container.style.overflow = "auto";
         container.style.height = "20rem";
         var content = document.createElement("p");
