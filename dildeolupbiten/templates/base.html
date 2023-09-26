@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dildeolupbiten - {{ title }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
     <script>
         var images = {
@@ -55,8 +54,29 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div id="alert-{{ category }}" class="p-4 m-0 text-center collapse show alert alert-{{ category }}">{{ message }}</div>
-                    <script>setTimeout(function() { $("#alert-{{ category }}").collapse() }, 2000);</script>
+                    <div id="alert-{{ category }}" class="row justify-content-center m-0 p-0 text-center align-items-center alert alert-{{ category }}" style="height:5rem;vertical-align:middle;"><span class="">{{ message }}</span></div>
+                    <script>
+                        var height = document.getElementById("alert-{{ category }}").style.height;
+                        var interval = 1000;
+                        setTimeout(
+                            function () {
+                                for (var i = 0; i < interval; i++) {
+                                    setTimeout(
+                                        function(x) {
+                                            document.getElementById("alert-{{ category }}").style.opacity = `${1 - x / interval}`;
+                                            document.getElementById("alert-{{ category }}").style.height = `${5 - 5 * x / interval}rem`;
+                                            if (x == interval - 1) {
+                                                document.getElementById("alert-{{ category }}").style.display = "none";
+                                            }
+                                        },
+                                        i,
+                                        i
+                                    );
+                                }
+                            },
+                            interval
+                        );
+                    </script>
                 {% endfor %}
             {% endif %}
         {% endwith %}
