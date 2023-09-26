@@ -340,8 +340,10 @@ function init_carousel() {
         }
     })
     .then(function(articles) {
-        var carousel = new Carousel(1, articles, "articles");
-        carousel.init();
+        if (articles.length > 0) {
+            var carousel = new Carousel(1, articles, "articles");
+            carousel.init();
+        }
     })
     .catch(function(error) {
         console.error(error);

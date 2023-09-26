@@ -5,10 +5,12 @@
     </div>
     <div class="my-4" id="articles">
         <script>
-            init_carousel();
+            var carousel = init_carousel();
         </script>
     </div>
-    <div class="d-block text-center">
-        {% block browse %}{% endblock browse %}
-    </div>
+    {% if articles %}
+        <div class="d-block text-center">
+            {% block browse %}{% endblock browse %}
+        </div>
+    {% endif %}
 {% endblock content %}
