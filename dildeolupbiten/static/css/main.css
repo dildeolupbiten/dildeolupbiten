@@ -42,4 +42,6 @@ a {
 
 a:hover {
     color: #666666;
+    cursor: pointer;
 }
+
