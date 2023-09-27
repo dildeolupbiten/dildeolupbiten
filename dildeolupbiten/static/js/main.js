@@ -24,8 +24,6 @@ class Card {
         d_px1.className = "d-inline justify-content-between px-2";
         var img = document.createElement("img");
         img.className = "img rounded img";
-        img.setAttribute("width", 30);
-        img.setAttribute("height", 30);
         img.src = this.src;
         var d_px2 = document.createElement("div");
         d_px2.className = "px-2"
