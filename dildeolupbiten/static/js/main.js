@@ -646,10 +646,8 @@ function search_article() {
 
 function list_articles(articles) {
     var div = document.createElement("div");
-    div.className = "container justify-content-center my-4";
+    div.className = "container justify-content-center my-4 rounded";
     div.style.height = "40rem";
-    div.style.overflow = "auto";
-    div.style.backgroundColor = "black";
     var length = articles.length;
     for (var i = 0; i < length; i++) {
         if (i % 4 == 0) {
@@ -674,7 +672,7 @@ function list_articles(articles) {
         row.append(col);
         div.append(row);
     }
-    document.body.append(div);
+    document.getElementById("list").append(div);
 }
 
 function init_articles(url) {
