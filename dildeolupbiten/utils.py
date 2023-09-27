@@ -6,10 +6,10 @@ from markdown import markdown
 from flask_login import current_user
 from flask import current_app, Response, json, url_for
 
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments.formatters import Terminal256Formatter
-from pygments.lexers import get_lexer_by_name
-from pygments import highlight
 
 from dildeolupbiten.articles.models import Article
 from dildeolupbiten.comments.models import Comment

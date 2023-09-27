@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, Blueprint, request, url_for, json, Response
+from flask import render_template, Blueprint, request, json, Response
 
-from dildeolupbiten.articles.models import Article
 from dildeolupbiten.utils import get_all_articles
 
 main = Blueprint("main", __name__)
