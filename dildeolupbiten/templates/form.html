@@ -2,7 +2,7 @@
 <div class="my-4">
     <form method="POST" enctype="multipart/form-data" class="d-flex justify-content-center">
         {{ form.hidden_tag() }}
-        <div class="rounded p-4 bg-dark text-light">
+        <div class="rounded p-4 bg-dark text-light w-25">
             {% for name, column in zip(names, columns) %}
                 <div class="form-group w-100">
                     <div>{{ column.label() }}</div>
