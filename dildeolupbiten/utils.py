@@ -259,6 +259,8 @@ def get_user_articles(user):
 
 
 def select_image(username):
+    if username == "dildeolupbiten":
+        return "logo.svg"
     for i in os.listdir(current_app.root_path + url_for("static", filename="images/")):
         if i.startswith("letter") and i.endswith(username[0].lower() + ".svg"):
             return i
