@@ -2,7 +2,7 @@
 <div class="my-4">
     <form method="POST" enctype="multipart/form-data" class="d-flex justify-content-center">
         {{ form.hidden_tag() }}
-        {% if title == "Create Article" %}
+        {% if title in ["Create Article", "Update Article"] %}
             {% set cls = "rounded p-4 bg-dark text-light container" %}
         {% else %}
             {% set cls = "rounded p-4 bg-dark text-light" %}
