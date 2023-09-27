@@ -226,8 +226,11 @@ class Article {
         var a = document.createElement("a");
         a.setAttribute("href", this.article_href);
         var img = document.createElement("img");
+        img.setAttribute("width", "600");
+        img.setAttribute("height", "300");
         img.setAttribute("width", "100%");
-        img.setAttribute("class", "rounded");
+        img.setAttribute("height", "100%");
+        img.setAttribute("class", " d-flex rounded");
         img.setAttribute("src", this.article_img);
         a.append(img);
         main.append(a);
@@ -263,7 +266,7 @@ class Carousel {
         var div = document.createElement("div");
         div.setAttribute("class", "d-flex justify-content-center");
         var d_flex = document.createElement("div");
-        d_flex.setAttribute("class", "d-flex justify-content-center w-75");
+        d_flex.setAttribute("class", "d-flex justify-content-center w-25");
         var carousel = document.createElement("div");
         carousel.id = this.id;
         carousel.setAttribute("class", "carousel slide");
@@ -295,7 +298,7 @@ class Carousel {
                 this.articles[i].date,
                 this.articles[i].author_img,
                 this.articles[i].author_href,
-                this.articles[i].author_name,
+                this.articles[i].author_name
             );
             article.init();
             indicators.append(indicator);
@@ -643,7 +646,7 @@ function search_article() {
 
 function list_articles(articles) {
     var div = document.createElement("div");
-    div.className = "container my-4";
+    div.className = "container justify-content-center my-4";
     div.style.height = "40rem";
     div.style.overflow = "auto";
     div.style.backgroundColor = "black";
@@ -654,11 +657,7 @@ function list_articles(articles) {
             row.className = "row";
         }
         var col = document.createElement("div");
-        if (length < 4) {
-            col.className = "col-sm pb-4";
-        } else {
-            col.className = "col-3 pb-4";
-        }
+        col.className = "col-3 p-4";
         var article = new Article(
             i,
             col,

@@ -17,7 +17,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    image = db.Column(db.String(255), default="default.png")
+    image = db.Column(db.String(255), nullable=False)
     articles = db.relationship("Article", backref="user", cascade="all, delete-orphan")
     comments = db.relationship("Comment", backref="user", cascade="all, delete-orphan")
     like_dislike_articles = db.relationship("LikeDislikeArticle", backref="user", cascade="all, delete-orphan")

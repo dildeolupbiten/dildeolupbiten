@@ -8,7 +8,7 @@ from flask import redirect, url_for, request, flash, render_template, Blueprint,
 
 from dildeolupbiten.users.models import User
 from dildeolupbiten import bcrypt, db, mail
-from dildeolupbiten.utils import save_image, get_user_articles
+from dildeolupbiten.utils import get_user_articles, select_image
 from dildeolupbiten.users.forms import LoginForm, RegistrationForm, AccountForm, RequestResetForm, ResetPasswordForm
 
 users = Blueprint("users", __name__)
@@ -43,7 +43,12 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=hashed_password,
+            image=select_image(form.username.data)
+        )
         db.session.add(user)
         db.session.commit()
         flash("Your account has been created! You are now able to log in", "success")
@@ -68,8 +73,6 @@ def logout():
 def account():
     form = AccountForm()
     if form.validate_on_submit():
-        if form.image.data:
-            current_user.image = save_image(form, request.files["image"], (50, 50))
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
@@ -82,8 +85,8 @@ def account():
         "users/account.html",
         title="Account",
         form=form,
-        columns=[form.username, form.email, form.image],
-        names=["username", "email", "image"]
+        columns=[form.username, form.email],
+        names=["username", "email"]
     )
 
 

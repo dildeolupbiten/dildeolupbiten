@@ -2,7 +2,6 @@
 
 import os
 
-from PIL import Image
 from markdown import markdown
 from flask_login import current_user
 from flask import current_app, Response, json, url_for
@@ -20,17 +19,6 @@ from dildeolupbiten.likes_dislikes.models import LikeDislikeArticle, LikeDislike
 def api_info(filename, url):
     with open(filename, encoding="utf-8") as f:
         return f.read().replace("/api/italian_verbs", url)
-
-
-def save_image(form, file, thumbnail, extra: str = ""):
-    filename = file.filename
-    filename, ext = os.path.splitext(filename)
-    filename += extra + ext
-    picture_path = os.path.join(current_app.root_path, "static/images", filename)
-    img = Image.open(form.image.data)
-    img = img.resize(thumbnail)
-    img.save(picture_path)
-    return filename
 
 
 def render(string):
@@ -253,7 +241,7 @@ def get_article_info(article):
     return {
         "title": article.title,
         "description": article.description,
-        "article_img": url_for("static", filename="images/" + article.image),
+        "article_img": article.image,
         "article_href": url_for("articles.article", article_title=article.title),
         "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
         "author_img": url_for("static", filename="images/" + article.user.image),
@@ -268,3 +256,9 @@ def get_all_articles():
 
 def get_user_articles(user):
     return [get_article_info(article) for article in Article.query.filter_by(user=user).order_by(Article.date.desc())]
+
+
+def select_image(username):
+    for i in os.listdir(current_app.root_path + url_for("static", filename="images/")):
+        if i.startswith("letter") and i.endswith(username[0].lower() + ".svg"):
+            return i

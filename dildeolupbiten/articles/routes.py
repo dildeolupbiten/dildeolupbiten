@@ -9,7 +9,7 @@ from dildeolupbiten import db
 from dildeolupbiten.articles.models import Article
 from dildeolupbiten.articles.forms import ArticleForm, ArticleUpdateForm
 from dildeolupbiten.utils import (
-    save_image, response_children, add_comment, delete_comment, update_comment, like_dislike_comment
+    response_children, add_comment, delete_comment, update_comment, like_dislike_comment
 )
 
 articles = Blueprint("articles", __name__)
@@ -26,7 +26,7 @@ def create():
             description=form.description.data,
             content=form.content.data,
             user=current_user,
-            image=save_image(form, request.files["image"], (600, 200), "article")
+            image=form.image.data
         )
         db.session.add(a)
         try:
@@ -84,11 +84,10 @@ def update(article_title):
         abort(403)
     form = ArticleUpdateForm()
     if form.validate_on_submit():
-        if form.image.data:
-            a.image = save_image(form, request.files["image"], (600, 200), "article")
         a.title = form.title.data
         a.content = form.content.data
         a.description = form.description.data
+        a.image = form.image.data
         db.session.commit()
         flash("Article has been updated!", "success")
         return redirect(url_for("articles.article", article_title=a.title))

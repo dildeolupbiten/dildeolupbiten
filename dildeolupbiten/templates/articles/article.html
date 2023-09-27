@@ -23,7 +23,7 @@
                     {% endif %}
                 </div>
                 <div class="article-group bg-dark text-light">
-                    <img style="width: 100%;" class="rounded" src="{{ url_for('static', filename='images/' + article.image) }}">
+                    <img width=600 height=300 style="width: 100%;" class="rounded" src="{{ article.image }}">
                 </div>
                 <div class="article-group bg-dark text-light">
                     <h2 style="color: #000000;" class="article-more"><b>{{ article.title }}</b></h2>
