@@ -20,6 +20,7 @@ def create_app():
     from dildeolupbiten.users.routes import users
     from dildeolupbiten.articles.routes import articles
     from dildeolupbiten.api.italian_verbs.routes import italian_verbs
+    from dildeolupbiten.api.italian_verbs.setup import get_database
     import dildeolupbiten.users.models
     import dildeolupbiten.articles.models
     import dildeolupbiten.comments.models
@@ -49,4 +50,5 @@ def create_app():
         bcrypt.init_app(app)
         login_manager.init_app(app)
         mail.init_app(app)
+        # get_database(app, db)
     return app
