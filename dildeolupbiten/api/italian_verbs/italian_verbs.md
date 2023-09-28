@@ -1,4 +1,4 @@
-This API conjugates Italian verbs. You can make various requests with different query parameters.
+This API conjugates 12322 Italian verbs. You can make various requests with different query parameters.
 
 The parameters are based on the Italian Verb model:
 
