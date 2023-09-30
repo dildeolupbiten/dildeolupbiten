@@ -14,7 +14,7 @@ class Card {
     header() {
         var container = document.createElement("div");
         container.id = `card-header-${this.secondary_id}`;
-        container.className = "card card-header container text-center w-100";
+        container.className = "card card-footer container text-center bg-dark border border-secondary";
         container.style.paddingBottom = "25px";
         var d_flex_justified = document.createElement("div");
         d_flex_justified.className = "d-flex justify-content-between";
@@ -92,7 +92,11 @@ class Card {
     footer() {
         var container = document.createElement("div");
         container.id = `card-footer-${this.secondary_id}`;
-        container.className = "card card-footer container text-center w-100 mb-2 bg-dark rounded";
+        if (this.secondary_id == `${this.primary_id}-secondary`) {
+            container.className = "card card-footer container text-center bg-dark border-left border-right border-secondary";
+        } else {
+            container.className = "card card-footer container text-center bg-dark border border-secondary";
+        }
         container.style.paddingBottom = "25px";
         var text_center = document.createElement("div");
         text_center.id = `text-center-${this.secondary_id}`;
@@ -164,10 +168,9 @@ class Card {
 }
 
 class Article {
-    constructor(id, parent, title, description, article_img, article_href, date, author_img, author_href, author_name) {
+    constructor(id, parent, title, article_img, article_href, date, author_img, author_href, author_name, recent) {
         this.id = id;
         this.title = title;
-        this.description = description;
         this.author_img = author_img;
         this.author_href = author_href;
         this.article_img = article_img;
@@ -176,10 +179,22 @@ class Article {
         this.date = date;
         this.article = document.createElement("article");
         this.parent = parent;
-
+        this.recent = recent;
     }
     init() {
-        this.article.setAttribute("class", "container rounded w-100 bg-dark");
+        this.article.setAttribute("class", "container rounded w-100 bg-dark border border-secondary my-4 col-sm");
+        var recent = this.recent;
+        var className = this.className;
+        function query(media, article_) {
+            if (media.matches) {
+                article_.className += recent ? "-4" : "-2";
+            } else {
+                article_.className += recent ? "-8" : "";
+            }
+        }
+        var media = window.matchMedia("(max-width: 600px)")
+        query(media, this.article)
+        media.addListener((e) => { query(e, this.article); });
         this.header();
         this.body();
         this.footer();
@@ -224,10 +239,18 @@ class Article {
         var a = document.createElement("a");
         a.setAttribute("href", this.article_href);
         var img = document.createElement("img");
-        img.setAttribute("width", "600");
-        img.setAttribute("height", "300");
         img.setAttribute("width", "100%");
-        img.setAttribute("height", "100%");
+        var recent = this.recent;
+        function query(media) {
+            if (media.matches) {
+                img.setAttribute("height", recent ? "50vw": "100vw");
+            } else {
+                img.setAttribute("height", recent ? "300vw": "100vw");
+            }
+        }
+        var media = window.matchMedia("(max-width: 600px)")
+        query(media)
+        media.addListener(query)
         img.setAttribute("class", " d-flex rounded");
         img.setAttribute("src", this.article_img);
         a.append(img);
@@ -240,10 +263,11 @@ class Article {
         var a = document.createElement("a");
         a.setAttribute("class", "article-group-link");
         a.setAttribute("href", this.article_href);
-        for (var i of [["h2", "#000000", this.title], ["p", "#666666", this.description]]) {
+        for (var i of [["h4", "#000000", this.title]]) {
             var item = document.createElement(i[0]);
             item.setAttribute("class", "article-more");
             item.style.color = i[1];
+            item.style.fontSize = "14px";
             item.innerHTML = i[2];
             a.append(item);
         }
@@ -255,16 +279,22 @@ class Article {
 
 
 class Carousel {
-    constructor(id, articles, parent) {
+    constructor(id, articles, parent, href, innerHTML, img) {
         this.id = id;
         this.articles = articles;
         this.parent = parent;
+        this.href = href;
+        this.innerHTML = innerHTML;
+        this.img = img;
     }
     init() {
         var div = document.createElement("div");
-        div.setAttribute("class", "d-flex justify-content-center");
+        div.setAttribute("class", "d-flex justify-content-center w-100");
+        div.style.backgroundImage = `URL(${this.img})`;
+        div.style.overflow = "scroll";
+        div.style.height = "40rem";
         var d_flex = document.createElement("div");
-        d_flex.setAttribute("class", "d-flex justify-content-center w-25");
+        d_flex.setAttribute("class", "d-inline justify-content-center w-50");
         var carousel = document.createElement("div");
         carousel.id = this.id;
         carousel.setAttribute("class", "carousel slide");
@@ -272,7 +302,7 @@ class Carousel {
         var indicators = document.createElement("ol");
         indicators.setAttribute("class", "carousel-indicators")
         var inner = document.createElement("div");
-        inner.setAttribute("class", "carousel-inner");
+        inner.setAttribute("class", "carousel-inner px-4");
         var length = this.articles.length;
         var length = this.articles.length;
         for (var i = 0; i < length; i++) {
@@ -281,7 +311,7 @@ class Carousel {
             indicator.setAttribute("data-slide-to", `${i}`);
             var item = document.createElement("div");
             item.id = `item${i}`;
-            item.setAttribute("class", "carousel-item");
+            item.setAttribute("class", "carousel-item col-sm");
             if (i == 0) {
                 indicator.setAttribute("class", "active");
                 item.className += " active";
@@ -290,13 +320,13 @@ class Carousel {
                 i,
                 item,
                 this.articles[i].title,
-                this.articles[i].description,
                 this.articles[i].article_img,
                 this.articles[i].article_href,
                 this.articles[i].date,
                 this.articles[i].author_img,
                 this.articles[i].author_href,
-                this.articles[i].author_name
+                this.articles[i].author_name,
+                true
             );
             article.init();
             indicators.append(indicator);
@@ -322,12 +352,22 @@ class Carousel {
             carousel.append(button);
         }
         d_flex.append(carousel);
+        var button_div = document.createElement("div");
+        button_div.className = "d-flex justify-content-center";
+        var a = document.createElement("a");
+        a.href = this.href;
+        a.id = "carousel-id";
+        a.innerHTML = this.innerHTML;
+        a.style.color = "#999999";
+        a.className = "btn btn-secondary bg-dark mb-4";
+        button_div.append(a);
+        d_flex.append(button_div);
         div.append(d_flex);
         document.getElementById(this.parent).append(div);
     }
 }
 
-function init_carousel() {
+function init_carousel(href, innerHTML, img) {
     var form = new FormData();
     form.append("articles", true);
     fetch(`/`, {
@@ -343,7 +383,7 @@ function init_carousel() {
     })
     .then(function(articles) {
         if (articles.length > 0) {
-            var carousel = new Carousel(1, articles, "articles");
+            var carousel = new Carousel(1, articles, "articles", href, innerHTML, img);
             carousel.init();
         }
     })
@@ -526,11 +566,10 @@ function delete_comment(primary_id) {
     }
 }
 
-function init_card() {
+function init_card(parent) {
     var div = document.createElement("div");
     div.id = `comments-${title}`;
-    div.className = "mb-4";
-    document.body.append(div);
+    document.getElementById(parent).append(div);
     var card = new Card(
         primary_id=title,
         secondary_id="secondary",
@@ -644,27 +683,25 @@ function search_article() {
 
 function list_articles(articles) {
     var div = document.createElement("div");
-    div.className = "container justify-content-center my-4 rounded";
+    div.className = "container justify-content-center rounded";
     div.style.height = "40rem";
     var length = articles.length;
+    var row = document.createElement("div");
+    row.className = "row";
     for (var i = 0; i < length; i++) {
-        if (i % 4 == 0) {
-            var row = document.createElement("div");
-            row.className = "row";
-        }
         var col = document.createElement("div");
-        col.className = "col-3 p-4";
+        col.className = "col-sm-3";
         var article = new Article(
             i,
             col,
             articles[i].title,
-            articles[i].description,
             articles[i].article_img,
             articles[i].article_href,
             articles[i].date,
             articles[i].author_img,
             articles[i].author_href,
-            articles[i].author_name
+            articles[i].author_name,
+            false
         )
         article.init();
         row.append(col);

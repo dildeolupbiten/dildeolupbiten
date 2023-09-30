@@ -1,5 +1,2 @@
 {% extends "view.html" %}
 {% block header %}Recent Articles By {{ user.username }}{% endblock header %}
-{% block browse %}
-    <a class="btn btn-secondary bg-dark" style="color: #999999;" href="{{ url_for('users.view', username=user.username + '/all_articles') }}">Browse All Articles By {{ user.username }}</a>
-{% endblock browse %}

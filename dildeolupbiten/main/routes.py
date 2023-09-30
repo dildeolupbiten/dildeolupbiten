@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, Blueprint, request, json, Response
+from flask import render_template, Blueprint, request, json, Response, url_for
 
 from dildeolupbiten.utils import get_all_articles
 
@@ -12,7 +12,13 @@ def view():
     articles = get_all_articles()[:6]
     if "articles" in request.form:
         return Response(json.dumps(articles), 200)
-    return render_template('main/view.html', title="Home", exists=len(articles))
+    return render_template(
+        'main/view.html',
+        title="Home",
+        exists=len(articles),
+        href=url_for("main.all_articles"),
+        innerHTML="Browse All Articles"
+    )
 
 
 @main.route("/all_articles", methods=["GET", "POST"])

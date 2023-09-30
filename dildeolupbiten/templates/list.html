@@ -3,9 +3,7 @@
     <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;">
         <h2>{% block header %}{% endblock header %}</h2>
     </div>
-    <div class="d-flex justify-content-center my-4">
-        <div class="card overflow-auto p-4 bg-dark text-light">
-            <div id="list" class="p-4 mt-2 rounded" style="background-color: black; overflow: auto; height: 35rem;">{% block init %}{% endblock init %}</div>
-        </div>
+    <div class="my-4 w-100">
+        <div id="list" class="p-4 rounded text-light border border-secondary" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow: auto; height: 35rem;">{% block init %}{% endblock init %}</div>
     </div>
 {% endblock content %}

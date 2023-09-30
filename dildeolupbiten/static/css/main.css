@@ -6,10 +6,6 @@ a, button {
     border-radius: 50%;
 }
 
-article {
-    padding: 10px;
-}
-
 .article-group {
     padding: 10px;
 }
@@ -45,3 +41,12 @@ a:hover {
     cursor: pointer;
 }
 
+@media only screen and (max-width: 600px) {
+    * {
+        font-size: 11px;
+    }
+}
+
+.carousel-indicators {
+    bottom: -0.5rem;
+}

@@ -3,14 +3,9 @@
     <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;">
         <h2>{% block header %}{% endblock header %}</h2>
     </div>
-    <div class="my-4" id="articles">
+    <div class="my-4 border border-secondary" id="articles">
         <script>
-            init_carousel();
+            init_carousel("{{ href }}", "{{ innerHTML }}", "{{ url_for('static', filename='images/bg.svg') }}");
         </script>
     </div>
-    {% if exists %}
-        <div class="d-block text-center">
-            {% block browse %}{% endblock browse %}
-        </div>
-    {% endif %}
 {% endblock content %}
