@@ -29,7 +29,7 @@
             </div>
             <div class="navbar-nav justify-content-center align-middle">
                 <input id="search-article" class="form-control" type="search" placeholder="Search article by title" aria-label="Search article by title" style="width: 16rem">
-                <a class="nav-item nav-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-item nav-link nav-header" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     API
                 </a>
                 <div class="dropdown" style="opacity:0.7;">
@@ -39,15 +39,15 @@
                 </div>
                 {% if current_user.is_authenticated %}
                     {% if current_user.username in permitted() %}
-                        <a class="nav-item nav-link" href="{{ url_for('articles.create') }}">Create Article</a>
+                        <a class="nav-item nav-link nav-header" href="{{ url_for('articles.create') }}">Create Article</a>
                     {% endif %}
-                    <a class="nav-item nav-link" href="{{ url_for('users.account') }}">Account</a>
-                    <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                    <a class="nav-item nav-link nav-header" href="{{ url_for('users.account') }}">Account</a>
+                    <a class="nav-item nav-link nav-header" href="{{ url_for('users.logout') }}">Logout</a>
                 {% else %}
-                    <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
-                    <a class="nav-item nav-link" href="{{ url_for('users.register') }}">Register</a>
+                    <a class="nav-item nav-link nav-header" href="{{ url_for('users.login') }}">Login</a>
+                    <a class="nav-item nav-link nav-header" href="{{ url_for('users.register') }}">Register</a>
                 {% endif %}
-                <a class="nav-item nav-link" href="{{ url_for('main.about') }}">
+                <a class="nav-item nav-link nav-header" href="{{ url_for('main.about') }}">
                     <img src="{{ url_for('static', filename='images/about.svg') }}" class="d-inline align-center rounded" alt="">
                 </a>
             </div>

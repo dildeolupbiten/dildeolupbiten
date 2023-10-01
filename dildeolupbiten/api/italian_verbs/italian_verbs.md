@@ -192,18 +192,18 @@ In order to find the conjugations of a verb, we can use the following parameters
 
 Query all conjugations of a single verb:
 
-- <a target="_blank" href=/api/italian_verbs?data={"verb":"essere"}>/api/italian_verbs?data={"verb": "essere"}</a>
+- <a target="_blank" style="color:blue;" href=/api/italian_verbs?data={"verb":"essere"}>/api/italian_verbs?data={"verb": "essere"}</a>
 
 Query all conjugations of some verbs:
 
-- <a target="_blank" href=/api/italian_verbs?data={"verb":["essere","avere"]}>/api/italian_verbs?data={"verb": ["essere", "avere"]}</a>
+- <a target="_blank" style="color:blue;" href=/api/italian_verbs?data={"verb":["essere","avere"]}>/api/italian_verbs?data={"verb": ["essere", "avere"]}</a>
 
 Query a specific mood and a specific subject:
 
-- <a target="_blank" href=/api/italian_verbs?data={"verb":"essere","modality":"indicativo","subject":"noi"}>/api/italian_verbs?data={"verb": "essere", "modality": "indicativo", "subject": "noi"}</a>
+- <a target="_blank" style="color:blue;" href=/api/italian_verbs?data={"verb":"essere","modality":"indicativo","subject":"noi"}>/api/italian_verbs?data={"verb": "essere", "modality": "indicativo", "subject": "noi"}</a>
 
 Query with multiple values:
 
-- <a target="_blank" href=/api/italian_verbs?data={"verb":["essere","avere"],"tense":["presente","imperfetto"]}>/api/italian_verbs?data={"verb": ["essere", "avere"], "tense": ["presente", "imperfetto"]}</a>
+- <a target="_blank" style="color:blue;" href=/api/italian_verbs?data={"verb":["essere","avere"],"tense":["presente","imperfetto"]}>/api/italian_verbs?data={"verb": ["essere", "avere"], "tense": ["presente", "imperfetto"]}</a>
 
 Basically, as long as you write valid verbs, you can combine endpoints to get more specific conjugations of these verbs.

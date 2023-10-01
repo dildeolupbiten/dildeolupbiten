@@ -187,7 +187,7 @@ class Article {
         var className = this.className;
         function query(media, article_) {
             if (media.matches) {
-                article_.className += recent ? "-4" : "-2";
+                article_.className += recent ? "-2" : "-2";
             } else {
                 article_.className += recent ? "-8" : "";
             }
@@ -243,7 +243,7 @@ class Article {
         var recent = this.recent;
         function query(media) {
             if (media.matches) {
-                img.setAttribute("height", recent ? "50vw": "100vw");
+                img.setAttribute("height", "100vw");
             } else {
                 img.setAttribute("height", recent ? "300vw": "100vw");
             }
@@ -294,7 +294,17 @@ class Carousel {
         div.style.overflow = "scroll";
         div.style.height = "40rem";
         var d_flex = document.createElement("div");
-        d_flex.setAttribute("class", "d-inline justify-content-center w-50");
+        function query(media) {
+            if (media.matches) {
+                d_flex.setAttribute("class", "d-inline justify-content-center container");
+            } else {
+                d_flex.setAttribute("class", "d-inline justify-content-center w-50");
+            }
+        }
+        var media = window.matchMedia("(max-width: 600px)")
+        query(media)
+        media.addListener(query)
+
         var carousel = document.createElement("div");
         carousel.id = this.id;
         carousel.setAttribute("class", "carousel slide");
@@ -311,7 +321,16 @@ class Carousel {
             indicator.setAttribute("data-slide-to", `${i}`);
             var item = document.createElement("div");
             item.id = `item${i}`;
-            item.setAttribute("class", "carousel-item col-sm");
+            function query(media) {
+                if (media.matches) {
+                    item.setAttribute("class", "carousel-item col-sm-4");
+                } else {
+                    item.setAttribute("class", "carousel-item col-sm");
+                }
+            }
+            var media = window.matchMedia("(max-width: 600px)")
+            query(media)
+            media.addListener(query)
             if (i == 0) {
                 indicator.setAttribute("class", "active");
                 item.className += " active";
@@ -689,7 +708,7 @@ function list_articles(articles) {
     row.className = "row";
     for (var i = 0; i < length; i++) {
         var col = document.createElement("div");
-        col.className = "col-sm-3";
+        col.className = "col-sm-4";
         var article = new Article(
             i,
             col,

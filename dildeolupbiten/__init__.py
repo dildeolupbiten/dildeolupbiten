@@ -48,6 +48,8 @@ def create_app():
     app.jinja_env.globals.update(orphan_comments=orphan_comments)
     app.jinja_env.globals.update(permitted=lambda: permitted(app))
     admin_.add_view(ViewModel(dildeolupbiten.users.models.User, db.session))
+    admin_.add_view(ViewModel(dildeolupbiten.articles.models.Article, db.session))
+    admin_.add_view(ViewModel(dildeolupbiten.comments.models.Comment, db.session))
     with app.app_context():
         db.init_app(app)
         # db.drop_all()
