@@ -13,3 +13,5 @@ class Config:
     MAIL_PASSWORD = os.environ["MAIL_PASSWORD"]
     DEBUG = True
     PORT = 5000
+    BASIC_AUTH_USERNAME = os.environ["BASIC_AUTH_USERNAME"]
+    BASIC_AUTH_PASSWORD = os.environ["BASIC_AUTH_PASSWORD"]

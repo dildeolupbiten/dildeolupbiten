@@ -11,6 +11,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments.formatters import Terminal256Formatter
 
+from dildeolupbiten.users.models import User
 from dildeolupbiten.articles.models import Article
 from dildeolupbiten.comments.models import Comment
 from dildeolupbiten.likes_dislikes.models import LikeDislikeArticle, LikeDislikeComment
@@ -259,8 +260,13 @@ def get_user_articles(user):
 
 
 def select_image(username):
-    if username == "dildeolupbiten":
+    if username == os.environ["BASIC_AUTH_USERNAME"]:
         return "logo.svg"
     for i in os.listdir(current_app.root_path + url_for("static", filename="images/")):
         if i.startswith("letter") and i.endswith(username[0].lower() + ".svg"):
             return i
+
+
+def permitted(app):
+    with app.app_context():
+        return [os.environ["BASIC_AUTH_USERNAME"], *[i.username for i in User.query.filter_by(permission=True).all()]]

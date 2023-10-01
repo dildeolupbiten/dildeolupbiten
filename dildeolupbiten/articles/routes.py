@@ -3,13 +3,13 @@
 import sqlalchemy.exc
 
 from flask_login import current_user, login_required
-from flask import redirect, url_for, request, flash, render_template, abort, Blueprint, Response, json
+from flask import redirect, url_for, request, flash, render_template, abort, Blueprint, Response, json, current_app
 
 from dildeolupbiten import db
 from dildeolupbiten.articles.models import Article
 from dildeolupbiten.articles.forms import ArticleForm, ArticleUpdateForm
 from dildeolupbiten.utils import (
-    response_children, add_comment, delete_comment, update_comment, like_dislike_comment
+    response_children, add_comment, delete_comment, update_comment, like_dislike_comment, permitted
 )
 
 articles = Blueprint("articles", __name__)
@@ -20,30 +20,40 @@ articles = Blueprint("articles", __name__)
 def create():
     form = ArticleForm()
     response = None
-    if form.validate_on_submit():
-        a = Article(
-            title=form.title.data,
-            description=form.description.data,
-            content=form.content.data,
-            user=current_user,
-            image=form.image.data
+    if current_user.username in permitted(current_app):
+        if form.validate_on_submit():
+            a = Article(
+                title=form.title.data,
+                description=form.description.data,
+                content=form.content.data,
+                user=current_user,
+                image=form.image.data
+            )
+            db.session.add(a)
+            try:
+                db.session.commit()
+                flash("Article created successfully.", "success")
+                return redirect(url_for("articles.article", article_title=form.title.data))
+            except sqlalchemy.exc.IntegrityError:
+                flash("There is an article using this title, change the title of the article.", "danger")
+                return redirect(url_for("articles.create"))
+        return render_template(
+            "articles/create.html",
+            title="Create Article",
+            form=form,
+            columns=[form.title, form.description, form.content, form.image],
+            names=["title", "description", "content", "image"],
+            response=response
         )
-        db.session.add(a)
-        try:
-            db.session.commit()
-            flash("Article created successfully.", "success")
-            return redirect(url_for("articles.article", article_title=form.title.data))
-        except sqlalchemy.exc.IntegrityError:
-            flash("There is an article using this title, change the title of the article.", "danger")
-            return redirect(url_for("articles.create"))
-    return render_template(
-        "articles/create.html",
-        title="Create Article",
-        form=form,
-        columns=[form.title, form.description, form.content, form.image],
-        names=["title", "description", "content", "image"],
-        response=response
-    )
+    else:
+        return render_template(
+            "articles/create.html",
+            title="Create Article",
+            form=form,
+            columns=[],
+            names=[],
+            response=response
+        )
 
 
 @articles.route("/article/<string:article_title>", methods=["GET", "POST"])

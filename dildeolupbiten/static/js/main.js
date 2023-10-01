@@ -340,7 +340,6 @@ class Carousel {
             button.setAttribute("href", `#${this.id}`);
             button.setAttribute("role", "button");
             button.setAttribute("data-slide", i[0]);
-            button.style.width = "1.5rem";
             var icon = document.createElement("span");
             icon.setAttribute("class", `carousel-control-${i[0]}-icon`);
             icon.setAttribute("aria-hidden", "true");
