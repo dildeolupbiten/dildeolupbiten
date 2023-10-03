@@ -64,7 +64,7 @@ def article(article_title):
     if request.method == "POST":
         if current_user.is_authenticated:
             if "add" in request.form:
-                return add_comment(request, db, a,)
+                return add_comment(request, db, a)
             elif "delete" in request.form:
                 return delete_comment(request, db, a)
             elif "update" in request.form:

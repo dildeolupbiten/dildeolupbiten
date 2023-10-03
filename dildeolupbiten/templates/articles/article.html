@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="p-4 text-center bg-dark border-top border-bottom border-secondary" style="color: #999999;"><h2>{{ article.title }}</h2></div>
-    <div id="main-div" class="w-100 mt-0 border-left py-4 border-right border-bottom border-secondary bg-dark" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow:scroll; height: 40rem;">
+    <div id="main-div" class="w-100 mt-0 border-left py-4 border-right border-bottom border-secondary bg-dark" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); background-repeat: no-repeat; background-size: cover;">
         <div id="main-container" class="d-flex container mt-0 border-top border-left border-right border-secondary rounded bg-dark">
             <article id="article" class="container w-100 bg-dark text-light">
                 <div class="article-group bg-dark rounded">

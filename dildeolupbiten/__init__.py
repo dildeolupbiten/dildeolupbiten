@@ -10,7 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 mail = Mail()
 bcrypt = Bcrypt()
-admin_ = Admin(template_mode='bootstrap4')
 login_manager = LoginManager()
 login_manager.login_view = "users.login"
 login_manager.login_message_category = "info"
@@ -31,6 +30,7 @@ def create_app():
     from dildeolupbiten.admin.models import ViewModel
     from dildeolupbiten.utils import render, count_attr, search_article, orphan_comments, permitted
     app = Flask(__name__)
+    admin = Admin(template_mode='bootstrap4')
     app.config.from_object(Config)
     app.register_blueprint(users)
     app.register_blueprint(articles)
@@ -47,9 +47,9 @@ def create_app():
     app.jinja_env.globals.update(search_article=search_article)
     app.jinja_env.globals.update(orphan_comments=orphan_comments)
     app.jinja_env.globals.update(permitted=lambda: permitted(app))
-    admin_.add_view(ViewModel(dildeolupbiten.users.models.User, db.session))
-    admin_.add_view(ViewModel(dildeolupbiten.articles.models.Article, db.session))
-    admin_.add_view(ViewModel(dildeolupbiten.comments.models.Comment, db.session))
+    admin.add_view(ViewModel(dildeolupbiten.users.models.User, db.session))
+    admin.add_view(ViewModel(dildeolupbiten.articles.models.Article, db.session))
+    admin.add_view(ViewModel(dildeolupbiten.comments.models.Comment, db.session))
     with app.app_context():
         db.init_app(app)
         # db.drop_all()
@@ -57,6 +57,6 @@ def create_app():
         bcrypt.init_app(app)
         login_manager.init_app(app)
         mail.init_app(app)
-        admin_.init_app(app)
+        admin.init_app(app)
         # get_database(app, db)
     return app

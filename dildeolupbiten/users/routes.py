@@ -26,7 +26,7 @@ def login():
             return redirect(url_for("main.view"))
         else:
             flash("Login Unsuccessful. Please check email and password", "danger")
-            return redirect(url_for("users.login"))
+            return redirect(url_for("users.login")), 404
     return render_template(
         "users/login.html",
         title="Login",
