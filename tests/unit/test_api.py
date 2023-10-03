@@ -8,4 +8,4 @@ def test_get_requests(client):
         response = client.get(view)
         assert response.status_code == 200
         if "data" in view:
-            assert json.loads(response.data) == []
+            assert json.loads(response.data) == {}
