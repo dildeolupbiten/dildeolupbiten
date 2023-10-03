@@ -17,14 +17,22 @@ def test_register(app, client, test_user):
         }
         # Submit and validate.
         # Send a post request with a register that already exists.
-        response = client.post("/register", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/register",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert b"Register" in response.data
         assert response.status_code == 200
         # Use the password of the test user.
         # Change the email.
         data["email"] = "dildeolupbiten@gmail.com"
         # Send a post request with this email.
-        response = client.post("/register", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/register",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 302
         assert b"Redirecting" in response.data
 
@@ -35,19 +43,30 @@ def test_login(client, test_user):
         "password": "wrong password"
     }
     # Send a post request with wrong credentials.
-    response = client.post("/login", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+    response = client.post(
+        "/login",
+        data=data,
+        headers={"X-Requested-With": "XMLHttpRequest"}
+    )
     assert response.status_code == 404
     assert b"Redirecting" in response.data
     # Use the password of the test user.
     data["password"] = "test1234"
     # Send a post request with test user credentials.
-    response = client.post("/login", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+    response = client.post(
+        "/login",
+        data=data,
+        headers={"X-Requested-With": "XMLHttpRequest"})
     assert response.status_code == 302
     assert b"Redirecting" in response.data
     # Try to log in as the user that is recently registered.
     data = {"email": "dildeolupbiten@gmail.com", "password": "dildeolupbiten1234"}
     # Send a post request with the new credentials.
-    response = client.post("/login", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+    response = client.post(
+        "/login",
+        data=data,
+        headers={"X-Requested-With": "XMLHttpRequest"}
+    )
     assert response.status_code == 302
     assert b"Redirecting" in response.data
 
@@ -75,7 +94,11 @@ def test_update_user(app, client):
             "email": "test@test.com"
         }
         # Send a post request without credentials
-        response = client.post("/account", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/account",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 302
         assert b"Redirecting" in response.data
         user = User.query.filter_by(username="dildeolupbiten").first()
@@ -87,7 +110,11 @@ def test_update_user(app, client):
         # Login as test_user.
         login_user(user)
         # Send a post request without credentials
-        response = client.post("/account", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/account",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 302
         assert b"Redirecting" in response.data
         # Assert that the email has changed.
@@ -95,7 +122,11 @@ def test_update_user(app, client):
         # Change the email back to original
         data["email"] = "dildeolupbiten@gmail.com"
         # Send a post request without credentials
-        response = client.post("/account", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/account",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 302
         assert b"Redirecting" in response.data
         # Assert that the email has changed to original.
@@ -108,7 +139,11 @@ def test_reset_request(client):
     assert response.status_code == 200
     data = {"email": "dildeolupbiten@gmail.com"}
     # Send a post request, this request sends an email.
-    response = client.post("/reset_password", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+    response = client.post(
+        "/reset_password",
+        data=data,
+        headers={"X-Requested-With": "XMLHttpRequest"}
+    )
     assert response.status_code == 302
     assert b"Redirecting" in response.data
 
@@ -126,7 +161,11 @@ def test_reset_password(app, client):
         user = User.verify_reset_token(token)
         assert user
         data = {"password": "new1234", "confirm_password": "new1234"}
-        response = client.post(f"/reset_password/{token}", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            f"/reset_password/{token}",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 302
         assert b"Redirecting" in response.data
         # Let's try to log in with the old password.
@@ -135,13 +174,21 @@ def test_reset_password(app, client):
             "password": "dildeolupbiten1234"
         }
         # Send a post request with the old password.
-        response = client.post("/login", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/login",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 404
         assert b"Redirecting" in response.data
         # Change the password.
         data["password"] = "new1234"
         # Send a post request with the new password.
-        response = client.post("/login", data=data, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            "/login",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 302
         assert b"Redirecting" in response.data
 

@@ -40,3 +40,13 @@ def test_user(app):
             db.session.add(test_user)
             db.session.commit()
         yield test_user
+
+
+@pytest.fixture
+def test_data(app):
+    yield lambda s: {
+        "title": f"{s} Title",
+        "description": f"{s} Description",
+        "content": f"{s} Content",
+        "image": "https://www.abbanews.eu/wp-content/uploads/2021/11/Fibonacci.jpg"
+    }

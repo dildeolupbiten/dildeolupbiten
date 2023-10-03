@@ -17,12 +17,17 @@ from dildeolupbiten.comments.models import Comment
 from dildeolupbiten.likes_dislikes.models import LikeDislikeArticle, LikeDislikeComment
 
 
-def api_info(filename, url):
-    with open(filename, encoding="utf-8") as f:
-        return f.read().replace("/api/italian_verbs", url)
+def api_info(filename, url) -> str | None:
+    if not all(isinstance(i, str) for i in [filename, url]):
+        return
+    if os.path.exists(filename):
+        with open(filename, encoding="utf-8") as f:
+            return f.read().replace("/api/italian_verbs", url)
 
 
-def render(string):
+def render(string) -> str | None:
+    if not isinstance(string, str):
+        return
     return ("{}" * 4).format(
         markdown(string, extensions=["fenced_code", "codehilite"]),
         "<style>",
@@ -31,11 +36,19 @@ def render(string):
     )
 
 
-def pygmentize(string):
-    return highlight(code=string, lexer=get_lexer_by_name("markdown"), formatter=Terminal256Formatter(style="material"))
+def pygmentize(string) -> str | None:
+    if not isinstance(string, str):
+        return
+    return highlight(
+        code=string,
+        lexer=get_lexer_by_name("markdown"),
+        formatter=Terminal256Formatter(style="material")
+    )
 
 
-def count_attr(model, value):
+def count_attr(model, value) -> int | None:
+    if not any(isinstance(model, i) for i in [Article, Comment]) or not isinstance(value, int):
+        return
     return len([i for i in model.likes_dislikes if i.value == value])
 
 
@@ -256,7 +269,10 @@ def get_all_articles():
 
 
 def get_user_articles(user):
-    return [get_article_info(article) for article in Article.query.filter_by(user=user).order_by(Article.date.desc())]
+    return [
+        get_article_info(article)
+        for article in Article.query.filter_by(user=user).order_by(Article.date.desc())
+    ]
 
 
 def select_image(username):
@@ -269,4 +285,7 @@ def select_image(username):
 
 def permitted(app):
     with app.app_context():
-        return [os.environ["BASIC_AUTH_USERNAME"], *[i.username for i in User.query.filter_by(permission=True).all()]]
+        return [
+            os.environ["BASIC_AUTH_USERNAME"],
+            *[i.username for i in User.query.filter_by(permission=True).all()]
+        ]

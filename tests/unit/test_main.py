@@ -8,6 +8,10 @@ def test_get_requests(client):
 
 def test_post_requests(client):
     for view, key in [["/", "articles"], ["/all_articles", "all_articles"]]:
-        response = client.post(view, data={key: True}, headers={"X-Requested-With": "XMLHttpRequest"})
+        response = client.post(
+            view,
+            data={key: True},
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
         assert response.status_code == 200
 
