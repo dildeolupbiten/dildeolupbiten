@@ -35,8 +35,6 @@ def test_count_attr(app, client, test_user, test_data):
     with app.test_request_context():
         # Test with invalid arguments
         assert count_attr("a", "b") is None
-        # Test with invalid arguments
-        assert count_attr("a", "b") is None
         # Set the transaction user_id.
         with client.session_transaction() as session_transaction:
             session_transaction['user_id'] = test_user.id
