@@ -4,7 +4,8 @@ import os
 
 from markdown import markdown
 from flask_login import current_user
-from flask import current_app, Response, json, url_for
+from flask import current_app, Response, json, url_for, Request
+from flask_sqlalchemy import SQLAlchemy
 
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
@@ -52,7 +53,7 @@ def count_attr(model, value) -> int | None:
 
 
 def orphan_comments(model) -> list | None:
-    if any(isinstance(model, i) for i in [Article, Comment]):
+    if isinstance(model, Article):
         return list(filter(lambda i: not i.parent, model.comments))
 
 
@@ -86,11 +87,14 @@ def find_children_recursively(elements, url_root):
 
 
 def response_children(model, url_root):
-    data = find_children_recursively(orphan_comments(model), url_root)
-    return Response(json.dumps(data), 200)
+    if isinstance(model, Article) and isinstance(url_root, str):
+        data = find_children_recursively(orphan_comments(model), url_root)
+        return Response(json.dumps(data), 200)
 
 
 def add_comment(request, db, article):
+    if not isinstance(request, Request) or not isinstance(db, SQLAlchemy) or not isinstance(article, Article):
+        return
     ids = request.form["primary_id"].split("-")
     content = render(request.form["content"])
     hidden_value = request.form["content"]
@@ -145,6 +149,8 @@ def add_comment(request, db, article):
 
 
 def delete_comment(request, db, article):
+    if not isinstance(request, Request) or not isinstance(db, SQLAlchemy) or not isinstance(article, Article):
+        return
     ids = request.form["primary_id"].split("-")
     comment = Comment.query.filter_by(id=ids[-1], user=current_user).first_or_404()
     if comment.parent:
@@ -165,7 +171,11 @@ def update_comment(request, db):
     ids = request.form["primary_id"].split("-")
     content = render(request.form["content"])
     hidden_value = request.form["content"]
-    comment = Comment.query.filter_by(id=ids[-1], user=current_user).first_or_404()
+    if not hasattr(current_user, "username"):
+        return
+    comment = Comment.query.filter_by(id=ids[-1], user=current_user).first()
+    if not comment:
+        return
     comment.content = hidden_value
     db.session.commit()
     data = {
@@ -177,6 +187,8 @@ def update_comment(request, db):
 
 
 def like_dislike_comment(request, db, article):
+    if not isinstance(request, Request) or not isinstance(db, SQLAlchemy) or not isinstance(article, Article):
+        return
     ids = request.form["primary_id"].split("-")
     value = int(request.form["value"])
     if len(ids) == 2:
@@ -224,7 +236,10 @@ def like_dislike_comment(request, db, article):
     return Response(json.dumps(data), 200)
 
 
-def query(d: dict, keys: list):
+def query(d, keys):
+    if not isinstance(d, dict) and not isinstance(keys, list):
+        return
+
     def recursive_query(dct: dict, key: list):
         result = {}
         for k, v in dct.items():
@@ -238,17 +253,9 @@ def query(d: dict, keys: list):
     return recursive_query(d, keys)
 
 
-def update(d: dict, sub_d: dict):
-    for key, value in d.items():
-        if key in sub_d:
-            for k in sub_d[key]:
-                d[key][k].update(sub_d[key][k])
-        if isinstance(value, dict):
-            update(value, sub_d)
-    return d
-
-
 def get_article_info(article):
+    if not isinstance(article, Article):
+        return
     return {
         "title": article.title,
         "description": article.description,
@@ -266,6 +273,8 @@ def get_all_articles():
 
 
 def get_user_articles(user):
+    if not isinstance(user, User):
+        return
     return [
         get_article_info(article)
         for article in Article.query.filter_by(user=user).order_by(Article.date.desc())
@@ -273,6 +282,8 @@ def get_user_articles(user):
 
 
 def select_image(username):
+    if not isinstance(username, str):
+        return
     if username == os.environ["BASIC_AUTH_USERNAME"]:
         return "logo.svg"
     for i in os.listdir(current_app.root_path + url_for("static", filename="images/")):
@@ -281,6 +292,8 @@ def select_image(username):
 
 
 def permitted(app):
+    if not isinstance(app, current_app.__class__):
+        return
     with app.app_context():
         return [
             os.environ["BASIC_AUTH_USERNAME"],

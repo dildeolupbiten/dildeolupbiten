@@ -4,7 +4,7 @@ from json.decoder import JSONDecodeError
 from flask import request, Blueprint, json, Response, render_template, current_app
 
 from dildeolupbiten import db
-from dildeolupbiten.utils import query, render, api_info, pygmentize
+from dildeolupbiten.utils import render, query, api_info, pygmentize
 from dildeolupbiten.api.italian_verbs.models import ItalianVerbModel
 from dildeolupbiten.api.italian_verbs.setup import get_conjugations
 from dildeolupbiten.api.italian_verbs.verb import ItalianVerb
@@ -65,13 +65,13 @@ async def get():
             if arg in args:
                 verbs = [
                     {
-                        "verb": verb["verb"],
+                        "verb": v["verb"],
                         "conjugations": query(
-                            verb["conjugations"],
+                            v["conjugations"],
                             [args[arg]] if isinstance(args[arg], str) else args[arg]
                         )
                     }
-                    for verb in verbs
+                    for v in verbs
                 ]
         return verbs
     return Response("Bad request", 400)
