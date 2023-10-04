@@ -46,5 +46,3 @@ def test_get_requests(client):
     assert data[1]["verb"] == "avere"
     assert list(data[0]["conjugations"]) == ["indicativo"]
     assert list(data[1]["conjugations"]) == ["indicativo"]
-
-
