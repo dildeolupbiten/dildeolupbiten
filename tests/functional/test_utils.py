@@ -2,6 +2,7 @@
 
 from dildeolupbiten.utils import *
 from flask_login import login_user
+from flask import request
 
 
 def test_api_info():
@@ -73,16 +74,115 @@ def test_count_attr(app, client, test_user, test_data):
         assert Article.query.filter_by(title="New Title").first() is None
 
 
-def test_orphan_comments():
-    pass
+def test_orphan_comments(app, client, test_user, test_data):
+    # Test with an invalid argument
+    assert orphan_comments("") is None
+    # Set the transaction user_id.
+    with client.session_transaction() as session_transaction:
+        session_transaction['user_id'] = test_user.id
+    # Login as test_user.
+    login_user(test_user)
+    # Create an article with post request
+    data = test_data("New")
+    response = client.post(
+        "/article/create",
+        data=data,
+        headers={"X-Requested-With": "XMLHttpRequest"}
+    )
+    assert response.status_code == 302
+    article = Article.query.filter_by(title=data["title"]).first()
+    assert article
+    # Create a comment with post request
+    comment_data = {
+        "content": "New Content",
+        "primary_id": "New-secondary",
+        "add": True
+    }
+    # Send a post request with an unauthorized user.
+    response = client.post(
+        "/article/New Title",
+        data=comment_data,
+        headers={"X-Requested-With": "XMLHttpRequest"}
+    )
+    # Check if the comment exists
+    assert response.status_code == 200
+    comment = Comment.query.filter_by(content="New Content").first()
+    assert comment
+    # Not let's assume comment is an orphan comment.
+    assert orphan_comments(article) == [comment]
+    # Delete the article
+    response = client.get("/article/New Title/delete")
+    assert response.status_code == 302
+    assert "Redirecting" in response.data.decode()
+    assert Article.query.filter_by(title="New Title").first() is None
 
 
-def test_search_article():
-    pass
-
-
-def test_find_children_recursively():
-    pass
+def test_find_children_recursively(app, client, test_user, test_data):
+    with app.test_request_context():
+        # Test with invalid arguments
+        assert find_children_recursively("", "") == []
+        # Set the transaction user_id.
+        with client.session_transaction() as session_transaction:
+            session_transaction['user_id'] = test_user.id
+        # Login as test_user.
+        login_user(test_user)
+        # Create an article with post request
+        data = test_data("Other")
+        response = client.post(
+            "/article/create",
+            data=data,
+            headers={"X-Requested-With": "XMLHttpRequest"}
+        )
+        assert response.status_code == 302
+        article = Article.query.filter_by(title=data["title"]).first()
+        assert article
+        # Now let's create 10 comments that each one is the child of the previous comment.
+        primary_id = "Other Title-secondary"
+        comments = []
+        for i in range(10):
+            # Create a comment with post request
+            comment_data = {
+                "content": f"Other Content-{i}",
+                "primary_id": primary_id,
+                "add": True
+            }
+            # Send a post request with an unauthorized user.
+            response = client.post(
+                "/article/Other Title",
+                data=comment_data,
+                headers={"X-Requested-With": "XMLHttpRequest"}
+            )
+            # Check if the comment exists
+            assert response.status_code == 200
+            comment = Comment.query.filter_by(content=f"Other Content-{i}").first()
+            assert comment
+            primary_id += f"-{comment.id}"
+            comments.append(comment)
+        # Now let's test whether the previous comment is the parent of the next comment
+        for index in range(len(comments)):
+            children = find_children_recursively([comments[index]], request.url_root)
+            assert children
+            assert len(children) == 1
+            assert isinstance(children, list)
+            assert isinstance(children[0], dict)
+            assert "children" in children[0]
+            # Test for all comments except the last one
+            if index != len(comments) - 1:
+                # Find the children of the previous comment
+                assert children[0]["children"]
+                assert len(children[0]["children"]) == 1
+                assert isinstance(children[0]["children"], list)
+                assert isinstance(children[0]["children"][0], dict)
+                # Assert that the next comment is in the children of the previous comment.
+                assert children[0]["children"][0]["id"] == comments[index + 1].id
+            # Test the last one
+            else:
+                assert children[0]["children"] == []
+        # Delete the article
+        response = client.get("/article/Other Title/delete")
+        assert response.status_code == 302
+        assert "Redirecting" in response.data.decode()
+        assert Article.query.filter_by(title="Other Title").first() is None
 
 
 def test_response_children():

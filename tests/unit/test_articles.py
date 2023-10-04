@@ -49,7 +49,7 @@ def test_create_comment(app, client, test_user):
     with app.test_request_context():
         data = {
             "content": "Test Content",
-            "primary_id": "Test-secondary",
+            "primary_id": "Test Title-secondary",
             "add": True
         }
         # Send a post request with an unauthorized user.
@@ -78,12 +78,12 @@ def test_create_comment(app, client, test_user):
 def test_update_comment(app, client, test_user):
     with app.test_request_context():
         # Get the comment owned by the test user.
-        comment = Comment.query.filter_by(user_id=test_user.id).first()
+        comment = Comment.query.filter_by(content="Test Content").first()
         # Assert that the comment exists.
         assert comment
         data = {
             "content": "Update Content",
-            "primary_id": f"Test-secondary-{comment.id}",
+            "primary_id": f"Test Title-secondary-{comment.id}",
             "update": True
         }
         # Send a post request with an unauthorized user.
@@ -119,14 +119,14 @@ def test_like_dislike(app, client, test_user):
         assert article
         # Assert that the article has no like:
         assert LikeDislikeArticle.query.filter_by(article_id=article.id).first() is None
-        # Get the comment owned by test user.
-        comment = Comment.query.filter_by(user_id=test_user.id).first()
+        # Get the comment of the article.
+        comment = Comment.query.filter_by(article_id=article.id).first()
         # Assert that the comment exists.
         assert comment
         # Assert that the comment has no like.
         assert LikeDislikeComment.query.filter_by(comment_id=comment.id).first() is None
         data = {
-            "primary_id": f"Test-secondary",
+            "primary_id": f"Test Title-secondary",
             "like_dislike": True,
             "value": 1  # means like
         }
@@ -139,7 +139,7 @@ def test_like_dislike(app, client, test_user):
         assert response.status_code == 404
         # Let's try to like the comment with the same unauthorized user.
         # Change the primary_id.
-        data["primary_id"] = f"Test-secondary-{comment.id}"
+        data["primary_id"] = f"Test Title-secondary-{comment.id}"
         # Send a post request with an unauthorized user.
         response = client.post(
             "/article/Test Title",
@@ -153,7 +153,7 @@ def test_like_dislike(app, client, test_user):
         # Login as test_user.
         login_user(test_user)
         # Change the primary_id to article id.
-        data["primary_id"] = "Test-secondary"
+        data["primary_id"] = "Test Title-secondary"
         # Send a post request with test user
         response = client.post(
             "/article/Test Title",
@@ -163,7 +163,7 @@ def test_like_dislike(app, client, test_user):
         assert response.status_code == 200
         assert LikeDislikeArticle.query.filter_by(article_id=article.id).first_or_404()
         # Change the primary_id to comment id.
-        data["primary_id"] = f"Test-secondary-{comment.id}"
+        data["primary_id"] = f"Test Title-secondary-{comment.id}"
         # Send a post request with test user
         response = client.post(
             "/article/Test Title",
@@ -176,12 +176,12 @@ def test_like_dislike(app, client, test_user):
 
 def test_delete_comment(app, client, test_user):
     with app.test_request_context():
-        comment = Comment.query.filter_by(user_id=test_user.id).first()
+        comment = Comment.query.filter_by(content="Update Content").first()
         # Assert that the comment exists.
         assert comment
         # Unauthorized user tries to delete a comment.
         data = {
-            "primary_id": f"Test-secondary-{comment.id}",
+            "primary_id": f"Test Title-secondary-{comment.id}",
             "delete": True
         }
         # Send a post request with an unauthorized user.
@@ -252,4 +252,4 @@ def test_delete_article(app, client, test_user):
         response = client.get("/article/Update Title/delete")
         assert response.status_code == 302
         assert "Redirecting" in response.data.decode()
-        assert Article.query.filter_by(title="Update Title").first() is None
+        assert Article.query.filter_by(title="Test Title").first() is None

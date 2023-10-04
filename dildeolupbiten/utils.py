@@ -47,21 +47,18 @@ def pygmentize(string) -> str | None:
 
 
 def count_attr(model, value) -> int | None:
-    if not any(isinstance(model, i) for i in [Article, Comment]) or not isinstance(value, int):
-        return
-    return len([i for i in model.likes_dislikes if i.value == value])
+    if any(isinstance(model, i) for i in [Article, Comment]) and isinstance(value, int):
+        return len([i for i in model.likes_dislikes if i.value == value])
 
 
-def orphan_comments(model):
-    return list(filter(lambda i: not i.parent, model.comments))
-
-
-def search_article(title):
-    article = Article.query.filter_by(title=title).first_or_404()
-    return article.title
+def orphan_comments(model) -> list | None:
+    if any(isinstance(model, i) for i in [Article, Comment]):
+        return list(filter(lambda i: not i.parent, model.comments))
 
 
 def find_children_recursively(elements, url_root):
+    if not isinstance(elements, list) and not isinstance(url_root, str):
+        return
     data = []
     try:
         username = current_user.username
