@@ -4,6 +4,7 @@ import os
 
 from markdown import markdown
 from flask_login import current_user
+from flask_admin.contrib.sqla import ModelView
 from flask import current_app, Response, json, url_for, Request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -299,3 +300,8 @@ def permitted(app):
             os.environ["BASIC_AUTH_USERNAME"],
             *[i.username for i in User.query.filter_by(permission=True).all()]
         ]
+
+
+class ViewModel(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.username == os.environ["BASIC_AUTH_USERNAME"]

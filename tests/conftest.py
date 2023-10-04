@@ -12,6 +12,7 @@ def app():
     app = create_app()
     app.config.update({"TESTING": True})
     app.config['WTF_CSRF_ENABLED'] = False
+    app.db = db
     yield app
 
 
