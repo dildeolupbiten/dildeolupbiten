@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import re
 import os
+import requests
 
 from markdown import markdown
 from flask_login import current_user
@@ -305,3 +307,14 @@ def permitted(app):
 class ViewModel(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.username == os.environ["BASIC_AUTH_USERNAME"]
+
+
+def gist(string):
+    if not isinstance(string, str):
+        return
+    patterns = re.findall("```python(?:(?!```).)*```", string, re.DOTALL)
+    start = "<div class=\"pt-2 pl-2 pr-2 rounded bg-dark\">\n```python"
+    end = "\n```\n</div>\n"
+    for pattern in patterns:
+        string = string.replace(pattern, pattern.replace("```python", start)[:-3] + end)
+    return string

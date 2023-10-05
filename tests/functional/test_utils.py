@@ -409,3 +409,17 @@ def test_permitted(app):
         # Test with valid argument
         assert permitted(app)
         assert permitted(app) == ["dildeolupbiten", "test_user"]
+
+
+def test_gist(app):
+    # Test with invalid argument.
+    assert gist(1) is None
+    # Continue testing
+    result = gist("hello")
+    assert result
+    assert isinstance(result, str)
+    assert "<div class=\"pt-2 pl-2 pr-2 rounded bg-dark\">\n```python" not in result
+    # Test with valid arguments
+    result = gist("```python\nprint('hello')\n```\n")
+    assert result
+    assert "<div class=\"pt-2 pl-2 pr-2 rounded bg-dark\">\n```python" in result
