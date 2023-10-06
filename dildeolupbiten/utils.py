@@ -309,8 +309,8 @@ class Gist(metaclass=MetaGist):
     d_flex = "<div class=\"d-flex\">\n"
     d_row = "<div class=\"bg-dark text-light pt-2 pl-2 pr-2 rounded-left\">\n"
     d_close = "</div>\n"
-    opening = f"<div class=\"pt-2 pl-2 pr-2 bg-dark rounded-right container\">\n"
-    closing = "\n</div>\n"
+    opening = "<div class=\"pt-2 pl-2 pr-2 bg-dark rounded-right container\">\n"
+    closing = "</div>\n"
 
     def __init__(self, code):
         self.code = code

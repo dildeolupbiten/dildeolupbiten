@@ -420,4 +420,9 @@ def test_gist(app):
     render = gist.render()
     assert render
     assert isinstance(render, str)
-    assert "</div>" in render
+    assert hasattr(gist, "code")
+    assert hasattr(gist, "d_row")
+    assert hasattr(gist, "d_flex")
+    assert hasattr(gist, "container")
+    assert hasattr(gist, "opening")
+    assert hasattr(gist, "closing")

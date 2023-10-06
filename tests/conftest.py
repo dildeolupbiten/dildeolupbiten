@@ -35,7 +35,7 @@ def test_user(app):
                 username="test_user",
                 password=bcrypt.generate_password_hash("test1234").decode("utf-8"),
                 email=os.environ["MAIL_USERNAME"],
-                image=os.path.join(app.root_path, "static/images/logo.svg"),
+                image="logo.svg",
                 permission=True
             )
             db.session.add(test_user)
