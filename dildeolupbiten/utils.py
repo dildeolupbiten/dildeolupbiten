@@ -2,7 +2,6 @@
 
 import re
 import os
-import requests
 
 from markdown import markdown
 from flask_login import current_user
@@ -27,17 +26,6 @@ def api_info(filename, url) -> str | None:
     if os.path.exists(filename):
         with open(filename, encoding="utf-8") as f:
             return f.read().replace("/api/italian_verbs", url)
-
-
-def render(string) -> str | None:
-    if not isinstance(string, str):
-        return
-    return ("{}" * 4).format(
-        markdown(string, extensions=["fenced_code", "codehilite"]),
-        "<style>",
-        HtmlFormatter(style="material", full=True, cssclass="codehilite").get_style_defs(),
-        "</style>"
-    )
 
 
 def pygmentize(string) -> str | None:
@@ -75,7 +63,7 @@ def find_children_recursively(elements, url_root):
             "date": i.date.strftime('%b %d, %Y').replace(" 0", " "),
             "src": f"{url_root}static/images/{i.user.image}",
             "href": f"{url_root}user/{i.user.username}",
-            "content": render(i.content),
+            "content": Gist(i.content).render(),
             "hidden_value": i.content,
             "likes": count_attr(i, 1),
             "dislikes": count_attr(i, -1),
@@ -99,7 +87,7 @@ def add_comment(request, db, article):
     if not isinstance(request, Request) or not isinstance(db, SQLAlchemy) or not isinstance(article, Article):
         return
     ids = request.form["primary_id"].split("-")
-    content = render(request.form["content"])
+    content = Gist(request.form["content"]).render()
     hidden_value = request.form["content"]
     if len(ids) == 2:
         comment = Comment(
@@ -172,7 +160,7 @@ def delete_comment(request, db, article):
 
 def update_comment(request, db):
     ids = request.form["primary_id"].split("-")
-    content = render(request.form["content"])
+    content = Gist(request.form["content"]).render()
     hidden_value = request.form["content"]
     if not hasattr(current_user, "username"):
         return
@@ -309,12 +297,46 @@ class ViewModel(ModelView):
         return current_user.is_authenticated and current_user.username == os.environ["BASIC_AUTH_USERNAME"]
 
 
-def gist(string):
-    if not isinstance(string, str):
-        return
-    patterns = re.findall("```python(?:(?!```).)*```", string, re.DOTALL)
-    start = "<div class=\"pt-2 pl-2 pr-2 rounded bg-dark\">\n```python"
-    end = "\n```\n</div>\n"
-    for pattern in patterns:
-        string = string.replace(pattern, pattern.replace("```python", start)[:-3] + end)
-    return string
+class MetaGist(type):
+    def __call__(cls, code):
+        if not isinstance(code, str):
+            return
+        return super().__call__(code)
+
+
+class Gist(metaclass=MetaGist):
+    container = "<div class=\"container\">\n"
+    d_flex = "<div class=\"d-flex\">\n"
+    d_row = "<div class=\"bg-dark text-light pt-2 pl-2 pr-2 rounded-left\">\n"
+    d_close = "</div>\n"
+    opening = f"<div class=\"pt-2 pl-2 pr-2 bg-dark rounded-right container\">\n"
+    closing = "\n</div>\n"
+
+    def __init__(self, code):
+        self.code = code
+        self.change_code_blocks()
+
+    def change_code_blocks(self):
+        for block in set(re.findall(f"```(?:(?!```).)*```", self.code, re.DOTALL)):
+            code = self.container
+            code += self.d_flex
+            code += self.d_row
+            code += "```\n"
+            for i in range(len(block.split("\n")) - 2):
+                code += f"{i + 1}\n"
+            code += "```\n"
+            code += self.d_close
+            code += self.opening
+            code += block + "\n"
+            code += self.closing
+            code += self.d_close
+            code += self.d_close
+            self.code = self.code.replace(block, code)
+
+    def render(self):
+        return ("{}" * 4).format(
+            markdown(self.code, extensions=["fenced_code", "codehilite"]),
+            "<style>",
+            HtmlFormatter(style="github-dark", full=True, cssclass="codehilite").get_style_defs(),
+            "</style>"
+        )

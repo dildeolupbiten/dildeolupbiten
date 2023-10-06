@@ -4,7 +4,7 @@ from json.decoder import JSONDecodeError
 from flask import request, Blueprint, json, Response, render_template, current_app
 
 from dildeolupbiten import db
-from dildeolupbiten.utils import render, query, api_info, pygmentize
+from dildeolupbiten.utils import query, api_info, pygmentize, Gist
 from dildeolupbiten.api.italian_verbs.models import ItalianVerbModel
 from dildeolupbiten.api.italian_verbs.setup import get_conjugations
 from dildeolupbiten.api.italian_verbs.verb import ItalianVerb
@@ -26,7 +26,7 @@ async def get():
             return render_template(
                 "api/italian_verbs/get.html",
                 title="API - Italian Verbs",
-                api_main=lambda: render(info)
+                api_main=lambda: Gist(info).render()
             )
     allowed_args = ["modality", "subject", "tense", "verb"]
     if all(arg in allowed_args for arg in args):

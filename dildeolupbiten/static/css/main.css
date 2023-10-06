@@ -50,28 +50,3 @@ a:hover {
 .carousel-indicators {
     bottom: -0.5rem;
 }
-
-.gist-data, .gist-file {
-    color: #fff !important;
-    background: #000 !important;
-    border-color: #343a40 !important;
-}
-
-.gist-meta {
-    display: none;
-}
-
-.gist {
-    .blob-wrapper {
-        .highlight {
-            background: #000;
-            font-color: #fff;
-        }
-        td {
-            color: #fff;
-        }
-        .pl-s {
-            color: #099A13;
-        }
-    }
-}

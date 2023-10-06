@@ -26,7 +26,7 @@ def create_app():
     import dildeolupbiten.comments.models
     import dildeolupbiten.likes_dislikes.models
     import dildeolupbiten.api.italian_verbs.models
-    from dildeolupbiten.utils import render, count_attr, orphan_comments, permitted, ViewModel, gist
+    from dildeolupbiten.utils import count_attr, orphan_comments, permitted, ViewModel, Gist
     app = Flask(__name__)
     admin = Admin(template_mode='bootstrap4')
     app.config.from_object(Config)
@@ -40,10 +40,9 @@ def create_app():
     app.jinja_env.globals.update(len=len)
     app.jinja_env.globals.update(zip=zip)
     app.jinja_env.globals.update(enumerate=enumerate)
-    app.jinja_env.globals.update(render=render)
     app.jinja_env.globals.update(count_attr=count_attr)
     app.jinja_env.globals.update(orphan_comments=orphan_comments)
-    app.jinja_env.globals.update(gist=gist)
+    app.jinja_env.globals.update(Gist=Gist)
     app.jinja_env.globals.update(permitted=lambda: permitted(app))
     admin.add_view(ViewModel(dildeolupbiten.users.models.User, db.session))
     admin.add_view(ViewModel(dildeolupbiten.articles.models.Article, db.session))

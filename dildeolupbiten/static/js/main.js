@@ -293,18 +293,17 @@ class Carousel {
         div.style.backgroundImage = `URL(${this.img})`;
         div.style.overflow = "scroll";
         div.style.height = "40rem";
-        var d_flex = document.createElement("div");
+        var d_inline = document.createElement("div");
         function query(media) {
             if (media.matches) {
-                d_flex.setAttribute("class", "d-inline justify-content-center container");
+                d_inline.setAttribute("class", "d-inline justify-content-center container");
             } else {
-                d_flex.setAttribute("class", "d-inline justify-content-center w-50");
+                d_inline.setAttribute("class", "d-inline justify-content-center w-50");
             }
         }
         var media = window.matchMedia("(max-width: 600px)")
         query(media)
         media.addListener(query)
-
         var carousel = document.createElement("div");
         carousel.id = this.id;
         carousel.setAttribute("class", "carousel slide");
@@ -369,7 +368,7 @@ class Carousel {
             button.append(sr_only);
             carousel.append(button);
         }
-        d_flex.append(carousel);
+        d_inline.append(carousel);
         var button_div = document.createElement("div");
         button_div.className = "d-flex justify-content-center";
         var a = document.createElement("a");
@@ -379,8 +378,8 @@ class Carousel {
         a.style.color = "#999999";
         a.className = "btn btn-secondary bg-dark mb-4";
         button_div.append(a);
-        d_flex.append(button_div);
-        div.append(d_flex);
+        d_inline.append(button_div);
+        div.append(d_inline);
         document.getElementById(this.parent).append(div);
     }
 }

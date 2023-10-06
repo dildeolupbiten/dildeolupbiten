@@ -16,13 +16,6 @@ def test_api_info():
     assert "<url>" in result
 
 
-def test_render():
-    # Render a not str value
-    assert render(1) is None
-    # Render a str value
-    assert render("a")
-
-
 def test_pygmentize():
     # Render a not str value
     assert pygmentize(1) is None
@@ -413,13 +406,18 @@ def test_permitted(app):
 
 def test_gist(app):
     # Test with invalid argument.
-    assert gist(1) is None
+    assert Gist(1) is None
     # Continue testing
-    result = gist("hello")
-    assert result
-    assert isinstance(result, str)
-    assert "<div class=\"pt-2 pl-2 pr-2 rounded bg-dark\">\n```python" not in result
+    gist = Gist("hello")
+    assert gist
+    render = gist.render()
+    assert render
+    assert isinstance(render, str)
+    assert "</div>" not in render
     # Test with valid arguments
-    result = gist("```python\nprint('hello')\n```\n")
-    assert result
-    assert "<div class=\"pt-2 pl-2 pr-2 rounded bg-dark\">\n```python" in result
+    gist = Gist("```python\nprint('hello')\n```\n")
+    assert gist
+    render = gist.render()
+    assert render
+    assert isinstance(render, str)
+    assert "</div>" in render
