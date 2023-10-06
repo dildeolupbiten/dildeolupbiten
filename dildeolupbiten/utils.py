@@ -313,11 +313,11 @@ class Gist(metaclass=MetaGist):
     closing = "</div>\n"
 
     def __init__(self, code):
-        self.code = code
-        self.change_code_blocks()
+        self.__code = code
 
-    def change_code_blocks(self):
-        for block in set(re.findall(f"```(?:(?!```).)*```", self.code, re.DOTALL)):
+    @property
+    def code(self):
+        for block in set(re.findall(f"```(?:(?!```).)*```", self.__code, re.DOTALL)):
             code = self.container
             code += self.d_flex
             code += self.d_row
@@ -331,7 +331,8 @@ class Gist(metaclass=MetaGist):
             code += self.closing
             code += self.d_close
             code += self.d_close
-            self.code = self.code.replace(block, code)
+            self.__code = self.__code.replace(block, code)
+        return self.__code
 
     def render(self):
         return ("{}" * 4).format(
