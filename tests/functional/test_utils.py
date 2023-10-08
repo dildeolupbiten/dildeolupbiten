@@ -404,25 +404,19 @@ def test_permitted(app):
         assert permitted(app) == ["dildeolupbiten", "test_user"]
 
 
-def test_gist(app):
+def test_html_code_format(app):
     # Test with invalid argument.
-    assert Gist(1) is None
+    assert HTMLCodeFormat(1) is None
     # Continue testing
-    gist = Gist("hello")
-    assert gist
-    render = gist.render()
-    assert render
-    assert isinstance(render, str)
-    assert "</div>" not in render
+    code = HTMLCodeFormat("hello")
+    assert code
+    highlighted = code.highlight()
+    assert highlighted
+    assert isinstance(highlighted, str)
+    assert "</div>" not in highlighted
     # Test with valid arguments
-    gist = Gist("```python\nprint('hello')\n```\n")
-    assert gist
-    render = gist.render()
-    assert render
-    assert isinstance(render, str)
-    assert hasattr(gist, "code")
-    assert hasattr(gist, "d_row")
-    assert hasattr(gist, "d_flex")
-    assert hasattr(gist, "container")
-    assert hasattr(gist, "opening")
-    assert hasattr(gist, "closing")
+    code = HTMLCodeFormat('[code="python"]\nprint("hello")\n[/code]')
+    assert code
+    highlighted = code.highlight()
+    assert highlighted
+    assert isinstance(highlighted, str)

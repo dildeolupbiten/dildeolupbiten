@@ -10,6 +10,7 @@ from flask import current_app, Response, json, url_for, Request
 from flask_sqlalchemy import SQLAlchemy
 
 from pygments import highlight
+from pygments.styles import get_all_styles
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments.formatters import Terminal256Formatter
@@ -63,7 +64,7 @@ def find_children_recursively(elements, url_root):
             "date": i.date.strftime('%b %d, %Y').replace(" 0", " "),
             "src": f"{url_root}static/images/{i.user.image}",
             "href": f"{url_root}user/{i.user.username}",
-            "content": Gist(i.content).render(),
+            "content": HTMLCodeFormat(i.content).highlight(),
             "hidden_value": i.content,
             "likes": count_attr(i, 1),
             "dislikes": count_attr(i, -1),
@@ -87,7 +88,7 @@ def add_comment(request, db, article):
     if not isinstance(request, Request) or not isinstance(db, SQLAlchemy) or not isinstance(article, Article):
         return
     ids = request.form["primary_id"].split("-")
-    content = Gist(request.form["content"]).render()
+    content = HTMLCodeFormat(request.form["content"]).highlight()
     hidden_value = request.form["content"]
     if len(ids) == 2:
         comment = Comment(
@@ -160,7 +161,7 @@ def delete_comment(request, db, article):
 
 def update_comment(request, db):
     ids = request.form["primary_id"].split("-")
-    content = Gist(request.form["content"]).render()
+    content = HTMLCodeFormat(request.form["content"]).highlight()
     hidden_value = request.form["content"]
     if not hasattr(current_user, "username"):
         return
@@ -297,47 +298,56 @@ class ViewModel(ModelView):
         return current_user.is_authenticated and current_user.username == os.environ["BASIC_AUTH_USERNAME"]
 
 
-class MetaGist(type):
-    def __call__(cls, code):
-        if not isinstance(code, str):
+class MetaHTMLCodeFormat(type):
+    def __call__(cls, text):
+        if not isinstance(text, str):
             return
-        return super().__call__(code)
+        return super().__call__(cls.reformat(text))
+
+    def reformat(cls, text: str):
+        d_container = "<div class=\"container\">\n"
+        d_flex = "<div class=\"d-flex\">\n"
+        d_rows = "<div class=\"bg-dark pt-2 pl-2 pr-2 rounded-left text-light\">\n"
+        d_close = "\n</div>\n"
+        d_code = "<div class=\"bg-dark pt-2 pl-2 pr-2 rounded-right container\">\n"
+        patterns = re.findall(r'\[code="([^"]*)"](.*?)\[/code]', text, re.DOTALL)
+        langs = []
+        for code in sorted(set(patterns), key=patterns.index):
+            lang, _code = tuple(map(str.strip, code))[:]
+            langs.append(lang)
+            html = "".join(
+                [
+                    d_container,
+                    d_flex,
+                    d_rows,
+                    "```\n",
+                    *map(lambda i: f"{i + 1}\n", range(len(_code.split("\n")))),
+                    "```\n",
+                    d_close,
+                    d_code,
+                    f"```{lang}\n" + _code + "\n```",
+                    d_close,
+                    d_close,
+                    d_close
+                ]
+            )
+            text = text.replace(code[1], html)
+            text = text.replace(f"[code=\"{lang}\"]", "").replace("[/code]", "")
+        return text
 
 
-class Gist(metaclass=MetaGist):
-    container = "<div class=\"container\">\n"
-    d_flex = "<div class=\"d-flex\">\n"
-    d_row = "<div class=\"bg-dark text-light pt-2 pl-2 pr-2 rounded-left\">\n"
-    d_close = "</div>\n"
-    opening = "<div class=\"pt-2 pl-2 pr-2 bg-dark rounded-right container\">\n"
-    closing = "</div>\n"
+class HTMLCodeFormat(str, metaclass=MetaHTMLCodeFormat):
+    def __init__(self, text: str):
+        super().__init__()
 
-    def __init__(self, code):
-        self.__code = code
-
-    @property
-    def code(self):
-        for block in set(re.findall(f"```(?:(?!```).)*```", self.__code, re.DOTALL)):
-            code = self.container
-            code += self.d_flex
-            code += self.d_row
-            code += "```\n"
-            for i in range(len(block.split("\n")) - 2):
-                code += f"{i + 1}\n"
-            code += "```\n"
-            code += self.d_close
-            code += self.opening
-            code += block + "\n"
-            code += self.closing
-            code += self.d_close
-            code += self.d_close
-            self.__code = self.__code.replace(block, code)
-        return self.__code
-
-    def render(self):
-        return ("{}" * 4).format(
-            markdown(self.code, extensions=["fenced_code", "codehilite"]),
-            "<style>",
-            HtmlFormatter(style="github-dark", full=True, cssclass="codehilite").get_style_defs(),
-            "</style>"
+    def highlight(self, style="github-dark"):
+        if style not in get_all_styles():
+            return self
+        return "".join(
+            [
+                markdown(self, extensions=["fenced_code", "codehilite"]),
+                "<style>",
+                HtmlFormatter(style=style, full=True, cssclass="codehilite").get_style_defs(),
+                "</style>"
+            ]
         )
