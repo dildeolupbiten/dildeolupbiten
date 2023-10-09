@@ -748,3 +748,37 @@ function init_articles(url) {
         console.error(error);
     });
 }
+
+class Category {
+    constructor(id, parent, child) {
+        var div = document.createElement("div");
+        div.className = "d-flex text-center container p-2";
+        div.background = "black";
+        var a = document.createElement("a");
+        a.className = "btn btn-outline-secondary";
+        a.innerHTML = id.replace("/article/", "");
+        if (child) {
+            a.style.width = "20rem";
+            a.href = "/article/" + id;
+            div.append(a);
+        } else {
+            a.style.width = "10rem";
+            a.href = `#category-${id}`;
+            a.setAttribute("data-toggle", "collapse");
+            a.setAttribute("role", "button");
+            a.setAttribute("aria-expanded", false);
+            a.setAttribute("aria-controls", `category-${id}`);
+            var collapse = document.createElement("div");
+            collapse.id = `category-${id}`;
+            collapse.className = `collapse`;
+            collapse.background = "black";
+            var inner = document.createElement("div");
+            inner.id = `inner-${id}`;
+            inner.className = "bg dark";
+            collapse.append(inner);
+            div.append(a);
+            div.append(collapse);
+        }
+        document.getElementById(parent).append(div);
+    }
+}

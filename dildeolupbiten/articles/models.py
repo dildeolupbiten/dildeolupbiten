@@ -8,7 +8,7 @@ from dildeolupbiten import db
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), unique=True, nullable=False)
-    description = db.Column(db.String(255), nullable=False)
+    category = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=dt.utcnow)
     image = db.Column(db.String(255), nullable=False)

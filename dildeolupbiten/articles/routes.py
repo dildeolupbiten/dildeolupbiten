@@ -24,7 +24,7 @@ def create():
         if form.validate_on_submit():
             a = Article(
                 title=form.title.data,
-                description=form.description.data,
+                category=form.category.data,
                 content=form.content.data,
                 user=current_user,
                 image=form.image.data
@@ -41,8 +41,8 @@ def create():
             "articles/create.html",
             title="Create Article",
             form=form,
-            columns=[form.title, form.description, form.content, form.image],
-            names=["title", "description", "content", "image"],
+            columns=[form.title, form.category, form.content, form.image],
+            names=["title", "category", "content", "image"],
             response=response
         )
     else:
@@ -96,7 +96,7 @@ def update(article_title):
     if form.validate_on_submit():
         a.title = form.title.data
         a.content = form.content.data
-        a.description = form.description.data
+        a.category = form.category.data
         a.image = form.image.data
         db.session.commit()
         flash("Article has been updated!", "success")
@@ -104,14 +104,14 @@ def update(article_title):
     elif request.method == "GET":
         form.title.data = a.title
         form.content.data = a.content
-        form.description.data = a.description
+        form.category.data = a.category
         form.image.data = a.image
     return render_template(
         "articles/create.html",
         title="Update Article",
         form=form,
-        columns=[form.title, form.description, form.content, form.image],
-        names=["title", "description", "content", "image"]
+        columns=[form.title, form.category, form.content, form.image],
+        names=["title", "category", "content", "image"]
     )
 
 

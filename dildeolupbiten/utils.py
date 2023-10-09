@@ -250,7 +250,7 @@ def get_article_info(article):
         return
     return {
         "title": article.title,
-        "description": article.description,
+        "category": article.category + " / " + article.title,
         "article_img": article.image,
         "article_href": url_for("articles.article", article_title=article.title),
         "date": article.date.strftime('%b %d, %Y').replace(" 0", " "),
@@ -262,6 +262,32 @@ def get_article_info(article):
 
 def get_all_articles():
     return [get_article_info(article) for article in Article.query.order_by(Article.date.desc())]
+
+
+def get_categories(articles):
+    d = {}
+    for article in articles:
+        category = article["category"].split(" / ")
+        if category and category[0]:
+            if "category" not in d:
+                d["category"] = category[0]
+                d["children"] = []
+            if not d["children"]:
+                d["children"].extend(get_categories([{"category": " / ".join(category[1:])}]))
+            else:
+                categories = get_categories([{"category": " / ".join(category[1:])}])
+                control = False
+                for i in categories:
+                    for j in d["children"]:
+                        index = d["children"].index(j)
+                        if i["category"] == j["category"]:
+                            d["children"][index]["children"].extend(i["children"])
+                            control = False
+                        else:
+                            control = True
+                if control:
+                    d["children"].extend(categories)
+    return [d] if d else []
 
 
 def get_user_articles(user):

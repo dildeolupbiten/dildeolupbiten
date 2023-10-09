@@ -7,7 +7,7 @@ from wtforms import StringField, SubmitField, TextAreaField
 
 class Form(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
-    description = StringField("Description", validators=[DataRequired()])
+    category = StringField("Category", validators=[DataRequired()])
     content = TextAreaField("Content", validators=[DataRequired()])
     image = StringField("Image", validators=[DataRequired()])
 
