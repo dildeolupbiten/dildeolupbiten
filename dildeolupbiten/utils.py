@@ -265,6 +265,10 @@ def get_all_articles():
 
 
 def get_categories(articles):
+    if not isinstance(articles, list):
+        return
+    if not all(len(i) and isinstance(i, dict) for i in articles):
+        return
     d = {}
     for article in articles:
         category = article["category"].split(" / ")
@@ -365,6 +369,7 @@ class MetaHTMLCodeFormat(type):
 class HTMLCodeFormat(str, metaclass=MetaHTMLCodeFormat):
     def __init__(self, text: str):
         super().__init__()
+        self.text = text
 
     def highlight(self, style="github-dark"):
         if style not in get_all_styles():

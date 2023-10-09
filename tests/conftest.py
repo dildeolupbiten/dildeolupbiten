@@ -47,7 +47,7 @@ def test_user(app):
 def test_data(app):
     yield lambda s: {
         "title": f"{s} Title",
-        "description": f"{s} Description",
+        "category": f"{s} / Category",
         "content": f"{s} Content",
         "image": "https://www.abbanews.eu/wp-content/uploads/2021/11/Fibonacci.jpg"
     }

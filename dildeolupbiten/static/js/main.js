@@ -782,3 +782,41 @@ class Category {
         document.getElementById(parent).append(div);
     }
 }
+
+function recursively_init_categories(cats, id) {
+    for (category of cats) {
+        if (category.children.length > 0) {
+            var child = false;
+        } else {
+            var child = true;
+        }
+        new Category(category.category, id, child);
+        if (category.children.length > 0) {
+            recursively_init_categories(category.children, `inner-${category.category}`);
+        }
+    }
+}
+
+function init_categories() {
+    var form = new FormData();
+    form.append("categories", true);
+    fetch("/categories", {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
+        }
+    })
+    .then(function(categories) {
+        recursively_init_categories(categories, "cat-container");
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
+}
+
+

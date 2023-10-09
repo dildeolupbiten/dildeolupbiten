@@ -420,3 +420,21 @@ def test_html_code_format(app):
     highlighted = code.highlight()
     assert highlighted
     assert isinstance(highlighted, str)
+
+
+def test_get_categories(app):
+    # Test with invalid argument:
+    assert not get_categories("")
+    assert not get_categories([])
+    assert not get_categories([{}])
+    assert not get_categories([{"category": ""}])
+    arg = [
+        {"category": 'Programming / Web / Jinja'},
+        {"category": 'Programming / Web / HTML'},
+        {"category": 'Programming / GUI / Tkinter'},
+        {"category": 'Programming / GUI / PyQT4'}
+    ]
+    result = get_categories(arg)
+    assert result
+    assert isinstance(result, list)
+    assert all(isinstance(i, dict) for i in result)
