@@ -762,7 +762,7 @@ class Category {
             a.href = "/article/" + id;
             div.append(a);
         } else {
-            a.style.width = "10rem";
+            a.className += " container";
             a.href = `#category-${id}`;
             a.setAttribute("data-toggle", "collapse");
             a.setAttribute("role", "button");
