@@ -45,6 +45,10 @@ a:hover {
     * {
         font-size: 11px;
     }
+    .article-group {
+        padding: 0px;
+        padding-bottom: 10px;
+    }
 }
 
 .carousel-indicators {

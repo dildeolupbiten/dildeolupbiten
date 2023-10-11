@@ -2,7 +2,8 @@ This API conjugates 12322 Italian verbs. You can make various requests with diff
 
 The parameters are based on the Italian Verb model:
 
-```python
+[code="python"]
+
 class ItalianVerb(dict):
     modalities = [
         "indicativo",           # en: indicative                tr: haber/bildirme kipi
@@ -26,16 +27,18 @@ class ItalianVerb(dict):
     subjects = [
         "io",                   # en: i                         tr: ben
         "tu",                   # en: you                       tr: sen
-        "lui/lei",              # en: he/she                    tr: o
+        "lui/lei",              # en: he/she/it                 tr: o
         "noi",                  # en: we                        tr: biz
         "voi",                  # en: you                       tr: siz
         "loro"                  # en: they                      tr: onlar
     ]
-```
+
+[/code]
 
 All Italian verbs have aforementioned attributes. An ItalianVerb object has similar attributes with the following verb model:
 
-```json
+[code="json"]
+
 {
     "conjugations": {
         "condizionale": {
@@ -181,7 +184,8 @@ All Italian verbs have aforementioned attributes. An ItalianVerb object has simi
     },
     "verb": "essere"
 }
-```
+
+[/code]
 
 In order to find the conjugations of a verb, we can use the following parameters:
 

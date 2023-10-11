@@ -264,34 +264,39 @@ def get_all_articles():
     return [get_article_info(article) for article in Article.query.order_by(Article.date.desc())]
 
 
-def get_categories(articles):
-    if not isinstance(articles, list):
+def get_categories(arg):
+    if not isinstance(arg, list):
         return
-    if not all(len(i) and isinstance(i, dict) for i in articles):
+    if not all(isinstance(i, dict) and "category" in i for i in arg):
         return
-    d = {}
-    for article in articles:
-        category = article["category"].split(" / ")
-        if category and category[0]:
-            if "category" not in d:
-                d["category"] = category[0]
-                d["children"] = []
-            if not d["children"]:
-                d["children"].extend(get_categories([{"category": " / ".join(category[1:])}]))
-            else:
-                categories = get_categories([{"category": " / ".join(category[1:])}])
-                control = False
-                for i in categories:
-                    for j in d["children"]:
-                        index = d["children"].index(j)
-                        if i["category"] == j["category"]:
-                            d["children"][index]["children"].extend(i["children"])
-                            control = False
-                        else:
-                            control = True
-                if control:
-                    d["children"].extend(categories)
-    return [d] if d else []
+    groups = {}
+    if arg and not arg[0]["category"]:
+        return groups
+    for i in arg:
+        category = i["category"].split(" / ")
+        if not category[0] in groups:
+            groups[category[0]] = [{"category": " / ".join(category[1:])}]
+        else:
+            groups[category[0]] += [{"category": " / ".join(category[1:])}]
+    return {k: get_categories(v) for k, v in groups.items()}
+
+
+def order_categories(cats):
+    if not isinstance(cats, dict):
+        return
+    result = []
+    for k, v in cats.items():
+        if v:
+            result.append({
+                "category": k,
+                "children": order_categories(v)
+            })
+        else:
+            result.append({
+                "category": k,
+                "children": []
+            })
+    return result
 
 
 def get_user_articles(user):

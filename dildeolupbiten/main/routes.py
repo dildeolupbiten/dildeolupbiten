@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template, Blueprint, request, json, Response, url_for
-from dildeolupbiten.utils import get_all_articles, get_categories
+from dildeolupbiten.utils import get_all_articles, get_categories, order_categories
 
 main = Blueprint("main", __name__)
 
@@ -30,7 +30,7 @@ def all_articles():
 @main.route("/categories", methods=["GET", "POST"])
 def categories():
     if "categories" in request.form:
-        return Response(json.dumps(get_categories(get_all_articles())), 200)
+        return Response(json.dumps(order_categories(get_categories(get_all_articles()))), 200)
     return render_template("main/categories.html", title='Categories')
 
 

@@ -436,5 +436,26 @@ def test_get_categories(app):
     ]
     result = get_categories(arg)
     assert result
+    assert isinstance(result, dict)
+
+
+def test_order_categories(app):
+    # Test with invalid argument:
+    assert not order_categories("")
+    assert not order_categories([])
+    arg = {
+        "Programming": {
+            "Web": {
+                "Jinja",
+                "HTML"
+            },
+            "GUI": {
+                "Tkinter",
+                "PyQT4"
+            }
+        }
+    }
+    result = order_categories(arg)
+    assert result
     assert isinstance(result, list)
-    assert all(isinstance(i, dict) for i in result)
+    assert all(isinstance(i, dict) and "category" in i for i in result)

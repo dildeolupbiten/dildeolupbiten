@@ -3,9 +3,10 @@
     <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;">
         <h2>{% block header %}{% endblock header %}</h2>
     </div>
-    <div class="my-4 border border-secondary" id="articles">
+    {% set bg = url_for('static', filename='images/bg.svg') %}
+    <div class="border border-secondary" id="articles" style="background: URL({{ bg }}); overflow: auto; height: 40rem;">
         <script>
-            init_carousel("{{ href }}", "{{ innerHTML }}", "{{ url_for('static', filename='images/bg.svg') }}");
+            init_carousel("{{ href }}", "{{ innerHTML }}");
         </script>
     </div>
 {% endblock content %}

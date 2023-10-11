@@ -276,23 +276,17 @@ class Article {
     }
 }
 
-
-
 class Carousel {
-    constructor(id, articles, parent, href, innerHTML, img) {
+    constructor(id, articles, parent, href, innerHTML) {
         this.id = id;
         this.articles = articles;
         this.parent = parent;
         this.href = href;
         this.innerHTML = innerHTML;
-        this.img = img;
     }
     init() {
         var div = document.createElement("div");
         div.setAttribute("class", "d-flex justify-content-center w-100");
-        div.style.backgroundImage = `URL(${this.img})`;
-        div.style.overflow = "scroll";
-        div.style.height = "40rem";
         var d_inline = document.createElement("div");
         function query(media) {
             if (media.matches) {
@@ -312,7 +306,6 @@ class Carousel {
         indicators.setAttribute("class", "carousel-indicators")
         var inner = document.createElement("div");
         inner.setAttribute("class", "carousel-inner px-4");
-        var length = this.articles.length;
         var length = this.articles.length;
         for (var i = 0; i < length; i++) {
             var indicator = document.createElement("li");
@@ -384,7 +377,7 @@ class Carousel {
     }
 }
 
-function init_carousel(href, innerHTML, img) {
+function init_carousel(href, innerHTML) {
     var form = new FormData();
     form.append("articles", true);
     fetch(`/`, {
@@ -400,7 +393,7 @@ function init_carousel(href, innerHTML, img) {
     })
     .then(function(articles) {
         if (articles.length > 0) {
-            var carousel = new Carousel(1, articles, "articles", href, innerHTML, img);
+            var carousel = new Carousel(1, articles, "articles", href, innerHTML);
             carousel.init();
         }
     })
@@ -752,17 +745,17 @@ function init_articles(url) {
 class Category {
     constructor(id, parent, child) {
         var div = document.createElement("div");
-        div.className = "d-flex text-center container p-2";
-        div.background = "black";
+        div.className = "d-flex justify-content-center text-center container p-2";
+        div.style.verticalAlign = "middle";
         var a = document.createElement("a");
-        a.className = "btn btn-outline-secondary";
+        a.className = "btn btn-secondary bg-dark";
         a.innerHTML = id.replace("/article/", "");
+        a.style.verticalAlign = "middle";
+        a.style.width = "20rem";
         if (child) {
-            a.style.width = "20rem";
             a.href = "/article/" + id;
             div.append(a);
         } else {
-            a.className += " container";
             a.href = `#category-${id}`;
             a.setAttribute("data-toggle", "collapse");
             a.setAttribute("role", "button");

@@ -3,7 +3,7 @@
     <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;">
         <h2>{% block header %}{% endblock header %}</h2>
     </div>
-    <div class="my-4 w-100">
-        <div id="list" class="p-4 rounded text-light border border-secondary" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow: auto; height: 35rem;">{% block init %}{% endblock init %}</div>
-    </div>
+        <div id="list" class="rounded text-light border border-secondary" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow: auto; height: 40rem;">
+            {% block init %}{% endblock init %}
+        </div>
 {% endblock content %}
