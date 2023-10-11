@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="p-4 text-center bg-dark border-top border-bottom border-secondary" style="color: #999999;"><h2>Categories</h2></div>
-<div id="main-div" class="w-100 mt-0 border-left border-right border-bottom border-secondary bg-dark" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow:scroll; height: 40rem;">
+<div id="main-div" class="w-100 border-left border-right border-bottom border-secondary bg-dark" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow:scroll; height: 40rem;">
     <div id="cat-container" class="container"></div>
 </div>
 <script>

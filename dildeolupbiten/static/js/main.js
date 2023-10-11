@@ -745,7 +745,7 @@ function init_articles(url) {
 class Category {
     constructor(id, parent, child) {
         var div = document.createElement("div");
-        div.className = "d-flex justify-content-center text-center container p-2";
+        div.className = "d-flex justify-content-center text-center container pt-4";
         div.style.verticalAlign = "middle";
         var a = document.createElement("a");
         a.className = "btn btn-secondary bg-dark";
