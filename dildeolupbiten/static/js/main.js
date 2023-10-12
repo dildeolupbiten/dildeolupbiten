@@ -743,15 +743,17 @@ function init_articles(url) {
 }
 
 class Category {
-    constructor(id, parent, child) {
+    constructor(id, parent, child, width) {
         var div = document.createElement("div");
-        div.className = "d-flex justify-content-center text-center container pt-4";
+        div.className = "card";
+        div.style.background = "RGBA(0, 0, 0, 0)";
         div.style.verticalAlign = "middle";
         var a = document.createElement("a");
-        a.className = "btn btn-secondary bg-dark";
+        a.id = id;
+        a.style.width = `${width}rem`;
+        a.className = "bg-dark text-center card-header rounded";
         a.innerHTML = id.replace("/article/", "");
         a.style.verticalAlign = "middle";
-        a.style.width = "20rem";
         if (child) {
             a.href = "/article/" + id;
             div.append(a);
@@ -763,12 +765,14 @@ class Category {
             a.setAttribute("aria-controls", `category-${id}`);
             var collapse = document.createElement("div");
             collapse.id = `category-${id}`;
+            collapse.setAttribute("data-parent", `#${parent}`);
             collapse.className = `collapse`;
-            collapse.background = "black";
+            var d_flex = document.createElement("div");
+            d_flex.className = "d-flex justify-content-center";
             var inner = document.createElement("div");
             inner.id = `inner-${id}`;
-            inner.className = "bg dark";
-            collapse.append(inner);
+            d_flex.append(inner);
+            collapse.append(d_flex);
             div.append(a);
             div.append(collapse);
         }
@@ -776,16 +780,16 @@ class Category {
     }
 }
 
-function recursively_init_categories(cats, id) {
+function recursively_init_categories(cats, id, width) {
     for (category of cats) {
         if (category.children.length > 0) {
             var child = false;
         } else {
             var child = true;
         }
-        new Category(category.category, id, child);
+        new Category(category.category, id, child, width);
         if (category.children.length > 0) {
-            recursively_init_categories(category.children, `inner-${category.category}`);
+            recursively_init_categories(category.children, `inner-${category.category}`, width - 3);
         }
     }
 }
@@ -805,7 +809,7 @@ function init_categories() {
         }
     })
     .then(function(categories) {
-        recursively_init_categories(categories, "cat-container");
+        recursively_init_categories(categories, "cat-container", 20);
     })
     .catch(function(error) {
         console.error(error);
