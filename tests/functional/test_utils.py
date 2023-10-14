@@ -422,27 +422,27 @@ def test_html_code_format(app):
     assert isinstance(highlighted, str)
 
 
-def test_get_categories(app):
+def test_get_articles(app):
     # Test with invalid argument:
-    assert not get_categories("")
-    assert not get_categories([])
-    assert not get_categories([{}])
-    assert not get_categories([{"category": ""}])
+    assert not get_articles("")
+    assert not get_articles([])
+    assert not get_articles([{}])
+    assert not get_articles([{"category": ""}])
     arg = [
         {"category": 'Programming / Web / Jinja'},
         {"category": 'Programming / Web / HTML'},
         {"category": 'Programming / GUI / Tkinter'},
         {"category": 'Programming / GUI / PyQT4'}
     ]
-    result = get_categories(arg)
+    result = get_articles(arg)
     assert result
     assert isinstance(result, dict)
 
 
-def test_order_categories(app):
+def test_order_articles(app):
     # Test with invalid argument:
-    assert not order_categories("")
-    assert not order_categories([])
+    assert not order_articles("")
+    assert not order_articles([])
     arg = {
         "Programming": {
             "Web": {
@@ -455,7 +455,7 @@ def test_order_categories(app):
             }
         }
     }
-    result = order_categories(arg)
+    result = order_articles(arg)
     assert result
     assert isinstance(result, list)
     assert all(isinstance(i, dict) and "category" in i for i in result)

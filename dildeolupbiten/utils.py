@@ -264,7 +264,7 @@ def get_all_articles():
     return [get_article_info(article) for article in Article.query.order_by(Article.date.desc())]
 
 
-def get_categories(arg):
+def get_articles(arg):
     if not isinstance(arg, list):
         return
     if not all(isinstance(i, dict) and "category" in i for i in arg):
@@ -278,10 +278,10 @@ def get_categories(arg):
             groups[category[0]] = [{"category": " / ".join(category[1:])}]
         else:
             groups[category[0]] += [{"category": " / ".join(category[1:])}]
-    return {k: get_categories(v) for k, v in groups.items()}
+    return {k: get_articles(v) for k, v in groups.items()}
 
 
-def order_categories(cats):
+def order_articles(cats):
     if not isinstance(cats, dict):
         return
     result = []
@@ -289,7 +289,7 @@ def order_categories(cats):
         if v:
             result.append({
                 "category": k,
-                "children": order_categories(v)
+                "children": order_articles(v)
             })
         else:
             result.append({

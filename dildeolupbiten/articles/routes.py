@@ -3,7 +3,7 @@
 import sqlalchemy.exc
 
 from flask_login import current_user, login_required
-from flask import redirect, url_for, request, flash, render_template, abort, Blueprint, Response, json, current_app
+from flask import redirect, url_for, request, flash, render_template, abort, Blueprint, Response, current_app
 
 from dildeolupbiten import db
 from dildeolupbiten.articles.models import Article
@@ -73,12 +73,6 @@ def article(article_title):
                 return like_dislike_comment(request, db, a)
         else:
             return Response("", 404)
-    if request.method == "GET":
-        if a:
-            data = {"title": a.title}
-        else:
-            data = {"title": None}
-        Response(json.dumps(data), 201)
     return render_template(
         "articles/article.html",
         title=a.title,

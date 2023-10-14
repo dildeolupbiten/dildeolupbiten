@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template, Blueprint, request, json, Response, url_for
-from dildeolupbiten.utils import get_all_articles, get_categories, order_categories
+from dildeolupbiten.utils import get_all_articles, get_articles, order_articles
 
 main = Blueprint("main", __name__)
 
 
 @main.route("/", methods=["GET", "POST"])
 def view():
-    articles = get_all_articles()[:6]
+    all_art = get_all_articles()[:6]
     if "articles" in request.form:
-        return Response(json.dumps(articles), 200)
+        return Response(json.dumps(all_art), 200)
     return render_template(
         'main/view.html',
         title="Home",
-        exists=len(articles),
+        exists=len(all_art),
         href=url_for("main.all_articles"),
         innerHTML="Browse All Articles"
     )
@@ -27,11 +27,11 @@ def all_articles():
     return render_template('main/list.html', title="All Articles")
 
 
-@main.route("/categories", methods=["GET", "POST"])
-def categories():
-    if "categories" in request.form:
-        return Response(json.dumps(order_categories(get_categories(get_all_articles()))), 200)
-    return render_template("main/categories.html", title='Categories')
+@main.route("/articles", methods=["GET", "POST"])
+def articles():
+    if "articles" in request.form:
+        return Response(json.dumps(order_articles(get_articles(get_all_articles()))), 200)
+    return render_template("main/articles.html", title='Articles')
 
 
 @main.route("/about")

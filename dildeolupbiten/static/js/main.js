@@ -669,28 +669,6 @@ function init_comments() {
     });
 }
 
-
-function search_article() {
-    document.getElementById("search-article").onkeypress = function (e) {
-        if (e.key == "Enter") {
-            var title = document.getElementById("search-article").value;
-            fetch(`/article/${title}`)
-            .then(function(response) {
-                if (response.status === 200) {
-                    window.location.replace(`/article/${title}`);
-                } else if (response.status === 404) {
-                    alert("Article not found!");
-                } else {
-                    throw new Error("Request failed.");
-                }
-            })
-            .catch(function(error) {
-                console.error(error);
-            });
-        }
-    }
-}
-
 function list_articles(articles) {
     var div = document.createElement("div");
     div.className = "container justify-content-center rounded";
@@ -743,15 +721,14 @@ function init_articles(url) {
 }
 
 class Category {
-    constructor(id, parent, child, width) {
+    constructor(id, parent, child) {
         var div = document.createElement("div");
-        div.className = "card";
+        div.className = "d-flex p-1";
         div.style.background = "RGBA(0, 0, 0, 0)";
         div.style.verticalAlign = "middle";
         var a = document.createElement("a");
         a.id = id;
-        a.style.width = `${width}rem`;
-        a.className = "bg-dark text-center card-header rounded";
+        a.className = "card-header col bg-dark text-center rounded";
         a.innerHTML = id.replace("/article/", "");
         a.style.verticalAlign = "middle";
         if (child) {
@@ -768,7 +745,6 @@ class Category {
             collapse.setAttribute("data-parent", `#${parent}`);
             collapse.className = `collapse`;
             var d_flex = document.createElement("div");
-            d_flex.className = "d-flex justify-content-center";
             var inner = document.createElement("div");
             inner.id = `inner-${id}`;
             d_flex.append(inner);
@@ -780,24 +756,24 @@ class Category {
     }
 }
 
-function recursively_init_categories(cats, id, width) {
+function recursively_init_categories(cats, id) {
     for (category of cats) {
         if (category.children.length > 0) {
             var child = false;
         } else {
             var child = true;
         }
-        new Category(category.category, id, child, width);
+        new Category(category.category, id, child);
         if (category.children.length > 0) {
-            recursively_init_categories(category.children, `inner-${category.category}`, width - 3);
+            recursively_init_categories(category.children, `inner-${category.category}`);
         }
     }
 }
 
 function init_categories() {
     var form = new FormData();
-    form.append("categories", true);
-    fetch("/categories", {
+    form.append("articles", true);
+    fetch("/articles", {
         method: "POST",
         body: form
     })
@@ -808,8 +784,8 @@ function init_categories() {
             throw new Error("Request failed.");
         }
     })
-    .then(function(categories) {
-        recursively_init_categories(categories, "cat-container", 20);
+    .then(function(articles) {
+        recursively_init_categories(articles, "cat-container");
     })
     .catch(function(error) {
         console.error(error);
