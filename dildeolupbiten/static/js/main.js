@@ -286,13 +286,13 @@ class Carousel {
     }
     init() {
         var div = document.createElement("div");
-        div.setAttribute("class", "d-flex justify-content-center w-100");
         var d_inline = document.createElement("div");
+        d_inline.setAttribute("class", "d-inline justify-content-center col");
         function query(media) {
             if (media.matches) {
-                d_inline.setAttribute("class", "d-inline justify-content-center container");
+                div.setAttribute("class", "container justify-content-center align-self-center w-75");
             } else {
-                d_inline.setAttribute("class", "d-inline justify-content-center w-50");
+                div.setAttribute("class", "container justify-content-center align-self-center w-50");
             }
         }
         var media = window.matchMedia("(max-width: 600px)")
@@ -313,16 +313,7 @@ class Carousel {
             indicator.setAttribute("data-slide-to", `${i}`);
             var item = document.createElement("div");
             item.id = `item${i}`;
-            function query(media) {
-                if (media.matches) {
-                    item.setAttribute("class", "carousel-item col-sm-4");
-                } else {
-                    item.setAttribute("class", "carousel-item col-sm");
-                }
-            }
-            var media = window.matchMedia("(max-width: 600px)")
-            query(media)
-            media.addListener(query)
+            item.setAttribute("class", "carousel-item col-sm");
             if (i == 0) {
                 indicator.setAttribute("class", "active");
                 item.className += " active";
@@ -671,14 +662,14 @@ function init_comments() {
 
 function list_articles(articles) {
     var div = document.createElement("div");
-    div.className = "container justify-content-center rounded";
+    div.className = "container rounded";
     div.style.height = "40rem";
     var length = articles.length;
     var row = document.createElement("div");
     row.className = "row";
     for (var i = 0; i < length; i++) {
         var col = document.createElement("div");
-        col.className = "col-sm-4";
+        col.className = "col-sm-3";
         var article = new Article(
             i,
             col,
@@ -791,5 +782,3 @@ function init_categories() {
         console.error(error);
     });
 }
-
-

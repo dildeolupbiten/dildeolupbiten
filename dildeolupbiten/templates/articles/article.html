@@ -42,5 +42,14 @@
         var article_dislike_count = parseInt("{{ count_attr(article, -1) }}");
         init_card("main-div");
         init_comments();
+        function query(media) {
+            if (media.matches) {
+                var main = document.getElementById("main-div");
+                main.className = main.className.replace("py-4", "");
+            }
+        }
+        var media = window.matchMedia("(max-width: 600px)")
+        query(media)
+        media.addListener(query)
     </script>
 {% endblock content %}

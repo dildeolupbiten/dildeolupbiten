@@ -1,57 +1,61 @@
 <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;"><h2>{{ title }}</h2></div>
-<div class="border border-secondary" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow:scroll; height: 40rem;">
-    {% if columns %}
-        <form method="POST" enctype="multipart/form-data" class="d-flex justify-content-center p-4">
-            {{ form.hidden_tag() }}
+<div class="d-flex justify-content-center border border-secondary w-100" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow:scroll; height: 40rem;">
+    <div class="container row justify-content-center align-self-center py-4 w-100">
+        {% if columns %}
             {% if title in ["Create Article", "Update Article"] %}
-                {% set cls = "p-4 text-light bg-dark rounded border border-secondary container" %}
+                {% set cls = "p-4 text-light bg-dark rounded border border-secondary container w-100" %}
+                {% set cls_form = "container" %}
             {% else %}
                 {% set cls = "p-4 text-light bg-dark rounded border border-secondary" %}
+                {% set cls_form = "" %}
             {% endif %}
-            <div class="{{ cls }}">
-                {% for name, column in zip(names, columns) %}
-                    <div id="content-{{ name }}" class="form-group w-100">
-                        <div>{{ column.label() }}</div>
-                        <div>{{ column() }}</div>
-                        <script>
-                            document.getElementById("{{ name }}").className = "form-control";
-                        </script>
-                    </div>
-                {% endfor %}
-                <div id="choose" class="d-flex">
-                    <div>
-                        {% if title == "Login" %}
-                            {{ form.remember() }}
-                            {{ form.remember.label() }}
-                        {% endif %}
-                    </div>
-                    <div class="d-flex mx-auto justify-content-between">
-                        <div>{{ form.submit() }}</div>
-                        <script>
-                            document.getElementById("submit").className = "btn btn-outline-secondary";
-                        </script>
-                        {% if title == "Account" %}
-                            <a class="btn btn-outline-secondary mx-2" href="{{ url_for('users.delete_user', username=current_user.username) }}">Delete</a>
-                        {% else %}
+            <form method="POST" enctype="multipart/form-data" class="{{ cls_form }}">
+                {{ form.hidden_tag() }}
+                <div class="{{ cls }}">
+                    {% for name, column in zip(names, columns) %}
+                        <div id="content-{{ name }}" class="form-group w-100">
+                            <div>{{ column.label() }}</div>
+                            <div>{{ column() }}</div>
                             <script>
-                                document.getElementById("choose").className = "d-block";
+                                document.getElementById("{{ name }}").className = "form-control";
                             </script>
-                        {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div id="choose" class="d-flex">
+                        <div>
+                            {% if title == "Login" %}
+                                {{ form.remember() }}
+                                {{ form.remember.label() }}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex mx-auto justify-content-between">
+                            <div>{{ form.submit() }}</div>
+                            <script>
+                                document.getElementById("submit").className = "btn btn-outline-secondary";
+                            </script>
+                            {% if title == "Account" %}
+                                <a class="btn btn-outline-secondary mx-2" href="{{ url_for('users.delete_user', username=current_user.username) }}">Delete</a>
+                            {% else %}
+                                <script>
+                                    document.getElementById("choose").className = "d-block";
+                                </script>
+                            {% endif %}
+                        </div>
                     </div>
+                    {% if title == "Login" %}
+                        <div><small><a href="{{ url_for('users.reset_request') }}">Forgot Password?</a></small></div>
+                        <div><small>Need An Account? <a href="{{ url_for('users.register') }}">Sign Up Now</a></small></div>
+                    {% elif title == "Register" %}
+                        <div><small>Already have an account? <a href="{{ url_for('users.login') }}">Sign In</a></small></div>
+                    {% endif %}
                 </div>
-                {% if title == "Login" %}
-                    <div><small><a href="{{ url_for('users.reset_request') }}">Forgot Password?</a></small></div>
-                    <div><small>Need An Account? <a href="{{ url_for('users.register') }}">Sign Up Now</a></small></div>
-                {% elif title == "Register" %}
-                    <div><small>Already have an account? <a href="{{ url_for('users.login') }}">Sign In</a></small></div>
-                {% endif %}
+            </form>
+        {% else %}
+            <div class="d-flex justify-content-center p-4">
+                <div class="p-4 text-light bg-dark rounded border border-secondary">
+                    <p>You don't have permission!</p>
+                </div>
             </div>
-        </form>
-    {% else %}
-        <div class="d-flex justify-content-center p-4">
-            <div class="p-4 text-light bg-dark rounded border border-secondary">
-                <p>You don't have permission!</p>
-            </div>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>

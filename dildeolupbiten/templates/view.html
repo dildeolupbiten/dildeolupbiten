@@ -4,7 +4,7 @@
         <h2>{% block header %}{% endblock header %}</h2>
     </div>
     {% set bg = url_for('static', filename='images/bg.svg') %}
-    <div class="border border-secondary" id="articles" style="background: URL({{ bg }}); overflow: auto; height: 40rem;">
+    <div class="d-flex border border-secondary" id="articles" style="background: URL({{ bg }}); overflow: auto; height: 40rem;">
         <script>
             init_carousel("{{ href }}", "{{ innerHTML }}");
         </script>
