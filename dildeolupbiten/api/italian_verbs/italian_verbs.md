@@ -4,7 +4,7 @@ The parameters are based on the Italian Verb model:
 
 [code="python"]
 
-class ItalianVerb(dict):
+class ItalianVerb(Verb):
     modalities = [
         "indicativo",           # en: indicative                tr: haber/bildirme kipi
         "congiuntivo",          # en: conjunctive               tr: istek kipi
@@ -27,13 +27,11 @@ class ItalianVerb(dict):
     subjects = [
         "io",                   # en: i                         tr: ben
         "tu",                   # en: you                       tr: sen
-        "lui/lei",              # en: he/she/it                 tr: o
+        "lui/lei",              # en: he/she                    tr: o
         "noi",                  # en: we                        tr: biz
         "voi",                  # en: you                       tr: siz
         "loro"                  # en: they                      tr: onlar
     ]
-
-[/code]
 
 All Italian verbs have aforementioned attributes. An ItalianVerb object has similar attributes with the following verb model:
 

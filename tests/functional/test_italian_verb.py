@@ -34,15 +34,6 @@ def test_italian_verb_conjugations():
                 assert subject in conjugations[modality][tense]
 
 
-def test_create_sub_dicts():
-    sub_dicts = ItalianVerb.create_sub_dicts(["indicativo"], ["presente"], ItalianVerb.subjects)
-    assert isinstance(sub_dicts, dict)
-    assert "indicativo" in sub_dicts
-    assert "presente" in sub_dicts["indicativo"]
-    for subject in ItalianVerb.subjects:
-        assert subject in sub_dicts["indicativo"]["presente"]
-
-
 def test_query():
     args = {"subject": "io", "modality": ["indicativo"], "tense": "presente"}
     assert ItalianVerb.query(args, "subject") == ["io"]
@@ -60,4 +51,3 @@ def test_query_invalid():
     assert ItalianVerb.query(args, "subject") is None
     assert ItalianVerb.query(args, "modality") is None
     assert ItalianVerb.query(args, "tense") is None
-

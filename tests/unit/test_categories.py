@@ -3,11 +3,11 @@
 
 def test_categories(client):
     # Send a get request
-    response = client.get("/categories")
+    response = client.get("/articles")
     assert response.status_code == 200
     response = client.post(
-        "/categories",
-        data={"categories": True},
+        "/articles",
+        data={"articles": True},
         headers={"X-Requested-With": "XMLHttpRequest"}
     )
     assert response.status_code == 200

@@ -21,12 +21,12 @@ from dildeolupbiten.comments.models import Comment
 from dildeolupbiten.likes_dislikes.models import LikeDislikeArticle, LikeDislikeComment
 
 
-def api_info(filename, url) -> str | None:
+def api_info(filename, url, title) -> str | None:
     if not all(isinstance(i, str) for i in [filename, url]):
         return
     if os.path.exists(filename):
         with open(filename, encoding="utf-8") as f:
-            return f.read().replace("/api/italian_verbs", url)
+            return f.read().replace(f"/api/{title}", url)
 
 
 def pygmentize(string) -> str | None:
@@ -387,3 +387,9 @@ class HTMLCodeFormat(str, metaclass=MetaHTMLCodeFormat):
                 "</style>"
             ]
         )
+
+
+def create_dict(*args):
+    if not all(isinstance(arg, list) for arg in args):
+        return
+    return {i: (create_dict(*args[1:])) for i in args[0]} if args else ""

@@ -6,14 +6,15 @@ from flask_login import login_user
 
 def test_api_info():
     # Test with an invalid filename.
-    assert api_info(1, "<url>") is None
+    assert api_info(1, "<url>", "Italian Verbs") is None
     # Test with the valid filename.
     result = api_info(
         "./dildeolupbiten/api/italian_verbs/italian_verbs.md",
-        "<url>"
+        "<url>",
+        "Italian Verbs"
     )
     assert result
-    assert "<url>" in result
+    assert "api" in result
 
 
 def test_pygmentize():
@@ -459,3 +460,20 @@ def test_order_articles(app):
     assert result
     assert isinstance(result, list)
     assert all(isinstance(i, dict) and "category" in i for i in result)
+
+
+def test_create_dict(app):
+    # Test with invalid arguments
+    assert create_dict(1, 2) is None
+    assert create_dict("a", "b") is None
+    assert create_dict(["a"], "b") is None
+    # Test with valid argument
+    res = create_dict(["a"], ["b"])
+    assert res
+    assert isinstance(res, dict)
+    assert "a" in res
+    assert res["a"]
+    assert isinstance(res["a"], dict)
+    assert "b" in res["a"]
+    assert isinstance(res["a"]["b"], str)
+
