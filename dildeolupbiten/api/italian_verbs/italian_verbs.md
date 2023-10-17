@@ -33,6 +33,7 @@ class ItalianVerb(Verb):
         "loro"                  # en: they                      tr: onlar
     ]
 
+[/code]
 All Italian verbs have aforementioned attributes. An ItalianVerb object has similar attributes with the following verb model:
 
 [code="json"]
