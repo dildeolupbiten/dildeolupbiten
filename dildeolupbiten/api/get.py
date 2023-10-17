@@ -30,31 +30,42 @@ async def get(title, verb_model, verb_class, get_conjugations):
     if all(arg in allowed_args for arg in args):
         if "verb" in args:
             if isinstance(args["verb"], list) or isinstance(args["verb"], tuple):
+                delete = []
+                for v in args["verb"]:
+                    if not any(v.endswith(i) for i in ["ire", "are", "ere", "mek", "mak"]):
+                        delete += [v]
+                for i in delete:
+                    args["verb"].remove(i)
                 verbs = verb_model.query.filter(verb_model.verb["verb"].astext.in_(args["verb"])).all()
                 verbs = [verb.verb for verb in verbs]
                 missings = [verb for verb in args["verb"] if verb not in [v["verb"] for v in verbs]]
                 if missings:
                     for missing in missings:
-                        if get_conjugations:
-                            verb = await get_conjugations(verb_class(verb=missing))
+                        if any(missing.endswith(i) for i in ["ire", "are", "ere", "mek", "mak"]):
+                            if get_conjugations:
+                                verb = await get_conjugations(verb_class(verb=missing))
+                            else:
+                                verb = verb_class(verb=missing[:-3])
+                                await verb.conjugate()
+                            if verb:
+                                verb = verb_model(verb=verb)
+                                db.session.add(verb)
+                                db.session.commit()
+                                verbs += [verb.verb]
                         else:
-                            verb = verb_class(verb=missing)
-                            await verb.conjugate()
-                        if verb:
-                            verb = verb_model(verb=verb)
-                            db.session.add(verb)
-                            db.session.commit()
-                            verbs += [verb.verb]
+                            return {}
                     if not verbs:
                         return {}
             elif isinstance(args["verb"], str):
+                if not any(args["verb"].endswith(i) for i in ["ire", "are", "ere", "mek", "mak"]):
+                    return {}
                 verbs = verb_model.query.filter(verb_model.verb["verb"].astext == args["verb"]).all()
                 verbs = [verb.verb for verb in verbs]
                 if not verbs:
                     if get_conjugations:
                         verb = await get_conjugations(verb_class(verb=args["verb"]))
                     else:
-                        verb = verb_class(verb=args["verb"])
+                        verb = verb_class(verb=args["verb"][:-3])
                         await verb.conjugate()
                     if verb:
                         verb = verb_model(verb=verb)

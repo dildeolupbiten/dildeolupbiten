@@ -54,7 +54,8 @@ class TurkishVerb(Verb):
             self["conjugations"].update(create_dict(*i))
 
     async def conjugate(self):
-        chart = TurkishVerbChart(self["verb"])
+        verb = self["verb"].replace("mek", "")
+        chart = TurkishVerbChart(verb)
         for tenses, suffix, mode in [
             (self.tenses, "", "haber kipi"),
             (["istek kipi"], "", "istek kipi"),
@@ -75,9 +76,9 @@ class TurkishVerb(Verb):
                         self["conjugations"][mode][subject] = chart.word
                     else:
                         self["conjugations"][mode][tense][subject] = chart.word
-                    chart.word = self["verb"]
+                    chart.word = verb
                     chart.suffixes = []
                     chart.add_suffix(chart.MAP[tense])
-                chart.word = self["verb"]
+                chart.word = verb
                 chart.suffixes = []
         await asyncio.sleep(0)

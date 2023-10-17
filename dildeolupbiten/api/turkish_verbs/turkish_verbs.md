@@ -306,18 +306,18 @@ In order to find the conjugations of a verb, we can use the following parameters
 
 Query all conjugations of a single verb:
 
-- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":"ol"}>/api/turkish_verbs?data={"ol": "gel"}</a>
+- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":"olmak"}>/api/turkish_verbs?data={"verb": "olmak"}</a>
 
 Query all conjugations of some verbs:
 
-- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":["ol","gel"]}>/api/turkish_verbs?data={"verb": ["ol", "gel"]}</a>
+- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":["olmak","gelmek"]}>/api/turkish_verbs?data={"verb": ["olmak", "gelmek"]}</a>
 
 Query a specific mood and a specific subject:
 
-- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":"ol","modality":"haber%20kipi","subject":"biz"}>/api/turkish_verbs?data={"verb": "ol", "modality": "haber kipi", "subject": "biz"}</a>
+- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":"olmak","modality":"haber%20kipi","subject":"biz"}>/api/turkish_verbs?data={"verb": "olmak", "modality": "haber kipi", "subject": "biz"}</a>
 
 Query with multiple values:
 
-- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":["ol","gel"],"tense":["şimdiki%20zaman","duyulan%20geçmiş%20zaman"]}>/api/turkish_verbs?data={"verb": ["ol", "gel"], "tense": ["şimdiki zaman", "duyulan geçmiş zaman"]}</a>
+- <a target="_blank" class="btn-outline-secondary" href=/api/turkish_verbs?data={"verb":["olmak","gelmek"],"tense":["şimdiki%20zaman","duyulan%20geçmiş%20zaman"]}>/api/turkish_verbs?data={"verb": ["olmak", "gelmek"], "tense": ["şimdiki zaman", "duyulan geçmiş zaman"]}</a>
 
 Basically, as long as you write valid verbs, you can combine endpoints to get more specific conjugations of these verbs.

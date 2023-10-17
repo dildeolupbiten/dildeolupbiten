@@ -82,7 +82,7 @@ class TurkishVerbChart:
                 return "sa"
             else:
                 return "se"
-        if suffix in ["yor", "üyor", "iyor", "ıyor", "uyor"]:
+        if suffix in ["yor", "üyor", "iyor", "ıyor", "uyor", "r", "er", "ar"]:
             return suffix
         if suffix in ["ecek", "acak"]:
             if vowel in self.BACK:
@@ -108,6 +108,13 @@ class TurkishVerbChart:
         vowel = list(filter(lambda i: i in self.VOWELS, self.word))[-1]
         exceptional_suffixes = ["ecek", "se", "di", "miş", "meli"]
         suffixes_1 = ["r", "ecek", "acak", "e", "a", "miş", "mış", "muş", "müş"]
+        if suffix == "r":
+            if len(self.word) >= 4 and (self.word.endswith("er") or self.word.endswith("ar")):
+                suffix = self.vowel_harmony("i", [self.BACK, self.FRONT]) + suffix
+                return self.vowel_harmony(suffix, [self.ROUNDED, self.UNROUNDED])
+            if self.word == "gül":
+                print("yes")
+                return "er"
         if suffix == "ler":
             if vowel in self.BACK:
                 return "lar"
