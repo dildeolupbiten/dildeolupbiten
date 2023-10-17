@@ -6,14 +6,17 @@ The parameters are based on the Turkish Verb model:
 
 class TurkishVerb(Verb):
     modalities = [
-        "haber/bildirme kipi",       # en: indicative                  it: indicativo
+        "haber kipi",                # en: indicative                  it: indicativo
         "istek kipi",                # en: conjunctive                 it: congiuntivo
-        "dilek/şart kipi",           # en: conditional                 it: condizionale
+        "şart kipi",                 # en: conditional                 it: condizionale
         "gereklilik kipi",           # en: necessative                 it: necessativo
         "emir kipi",                 # en: imperative                  it: imperativo
-        "mastar",                    # en: infinitive                  it: infinitivo
-        "ortaç",                     # en: participle                  it: participio
-        "ulaç"                       # en: gerund                      it: gerundio
+        "mastar kipi",               # en: infinitive                  it: infinitivo
+        "ortaç kipi",                # en: participle                  it: participio
+        "ulaç kipi"                  # en: gerund                      it: gerundio
+        "hikaye birleşik zaman",     # en: story compound tense        it: tempo composto storico
+        "rivayet birleşik zaman",    # en: rumor compound tense        it: tempo composto rumoroso
+        "şart birleşik zaman"        # en: conditional compound tense  it: tempo composto condizionale
     ]
     tenses = [
         "duyulan geçmiş zaman",      # en: dubitative past tense       it: tempo passato dubitativo
@@ -21,11 +24,6 @@ class TurkishVerb(Verb):
         "şimdiki zaman",             # en: present progressive tense   it: tempo presente progressivo
         "geniş zaman",               # en: simple aorist tense         it: tempo aoristo semplice
         "gelecek zaman"              # en: future tense                it: tempo futuro
-    ]
-    composite_tenses = [
-        "hikaye birleşik zaman",     # en: story composite tense       it: tempo composto storico
-        "rivayet birleşik zaman",    # en: rumor composite tense       it: tempo composto rumoroso
-        "şart birleşik zaman"        # en: conditional composite tense it: tempo composto condizionale
     ]
     subjects = [
         "ben",                       # en: i                           it: io
@@ -44,7 +42,7 @@ All Turkish verbs have aforementioned attributes. A TurkishVerb object has simil
 
 {
     "conjugations": {
-        "haber/bildirme kipi": {
+        "haber kipi": {
             "duyulan geçmiş zaman": {
                 "ben": "olmuşum",
                 "sen": "olmuşsun",
@@ -94,7 +92,7 @@ All Turkish verbs have aforementioned attributes. A TurkishVerb object has simil
             "siz": "olasınız",
             "onlar": "olalar"
         },
-        "dilek/şart kipi": {
+        "şart kipi": {
             "ben": "olsam",
             "sen": "olsan",
             "o": "olsa",
@@ -167,7 +165,7 @@ All Turkish verbs have aforementioned attributes. A TurkishVerb object has simil
                 "siz": "olaydınız",
                 "onlar": "olaydılar"
             },
-            "dilek/şart kipi": {
+            "şart kipi": {
                 "ben": "olsaydım",
                 "sen": "olsaydın",
                 "o": "olsaydı",
@@ -225,7 +223,7 @@ All Turkish verbs have aforementioned attributes. A TurkishVerb object has simil
                 "siz": "olaymışsınız",
                 "onlar": "olaymışlar"
             },
-            "dilek/şart kipi": {
+            "şart kipi": {
                 "ben": "olsaymışım",
                 "sen": "olsaymışsın",
                 "o": "olsaymış",
@@ -291,7 +289,10 @@ All Turkish verbs have aforementioned attributes. A TurkishVerb object has simil
                 "siz": "olmalıysanız",
                 "onlar": "olmalıysalar"
             }
-        }
+        },
+        "mastar kipi": "olmak",
+        "ortaç kipi": "olmuş",
+        "ulaç kipi": "olarak"
     }
 }
 

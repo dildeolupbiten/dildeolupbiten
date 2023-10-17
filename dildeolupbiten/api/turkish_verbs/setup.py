@@ -19,6 +19,9 @@ class TurkishVerbChart:
         "istek kipi": "e",
         "şart kipi": "se",
         "gereklilik kipi": "meli",
+        "mastar kipi": "mek",
+        "ortaç kipi": "miş",
+        "ulaç kipi": "erek",
         "emir kipi": "-",
         "ben": "m",
         "sen": "n",
@@ -99,6 +102,16 @@ class TurkishVerbChart:
                 return "malı"
             else:
                 return "meli"
+        if suffix in ["mek", "mak"]:
+            if vowel in self.BACK:
+                return "mak"
+            else:
+                return "mek"
+        if suffix in ["erek", "arak"]:
+            if vowel in self.BACK:
+                return "arak"
+            else:
+                return "erek"
         old, new = (rule[0], rule[1]) if vowel in rule[1] else (rule[1], rule[0])
         for i, j in zip(old, new):
             suffix = suffix.replace(i, j)
@@ -106,14 +119,13 @@ class TurkishVerbChart:
 
     def vowel_derivation(self, suffix: str):
         vowel = list(filter(lambda i: i in self.VOWELS, self.word))[-1]
-        exceptional_suffixes = ["ecek", "se", "di", "miş", "meli"]
+        exceptional_suffixes = ["ecek", "se", "di", "miş", "meli", "mek"]
         suffixes_1 = ["r", "ecek", "acak", "e", "a", "miş", "mış", "muş", "müş"]
         if suffix == "r":
             if len(self.word) >= 4 and (self.word.endswith("er") or self.word.endswith("ar")):
                 suffix = self.vowel_harmony("i", [self.BACK, self.FRONT]) + suffix
                 return self.vowel_harmony(suffix, [self.ROUNDED, self.UNROUNDED])
             if self.word == "gül":
-                print("yes")
                 return "er"
         if suffix == "ler":
             if vowel in self.BACK:
@@ -200,7 +212,7 @@ class TurkishVerbChart:
                 return suffix
         if suffix and suffix[0] in self.VOWELS and self.word[-1] in self.HARD:
             exceptions = ["et", "git"]
-            suffixes = ["ecek", "acak", "iyor", "ıyor", "uyor", "üyor", "e", "a", "er"]
+            suffixes = ["ecek", "acak", "iyor", "ıyor", "uyor", "üyor", "e", "a", "er", "erek", "arak"]
             if suffix in suffixes and (self.word in exceptions or self.word.endswith("et")):
                 self.word = self.word[:-1] + self.SOFT[self.HARD.index(self.word[-1])]
         if suffix and suffix[-1] in "mz":

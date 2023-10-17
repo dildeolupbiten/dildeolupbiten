@@ -14,9 +14,9 @@ class TurkishVerb(Verb):
         "şart kipi",                 # en: conditional                 it: condizionale
         "gereklilik kipi",           # en: necessative                 it: necessativo
         "emir kipi",                 # en: imperative                  it: imperativo
-        "mastar",                    # en: infinitive                  it: infinitivo
-        "ortaç",                     # en: participle                  it: participio
-        "ulaç"                       # en: gerund                      it: gerundio
+        "mastar kipi",               # en: infinitive                  it: infinitivo
+        "ortaç kipi",                # en: participle                  it: participio
+        "ulaç kipi"                  # en: gerund                      it: gerundio
     ]
     tenses = [
         "duyulan geçmiş zaman",      # en: dubitative past tense       it: tempo passato dubitativo
@@ -26,9 +26,9 @@ class TurkishVerb(Verb):
         "gelecek zaman"              # en: future tense                it: tempo futuro
     ]
     composite_tenses = [
-        "hikaye birleşik zaman",     # en: story composite tense       it: tempo composto storico
-        "rivayet birleşik zaman",    # en: rumor composite tense       it: tempo composto rumoroso
-        "şart birleşik zaman"        # en: conditional composite tense it: tempo composto condizionale
+        "hikaye birleşik zaman",     # en: story compound tense       it: tempo composto storico
+        "rivayet birleşik zaman",    # en: rumor compound tense       it: tempo composto rumoroso
+        "şart birleşik zaman"        # en: conditional compound tense it: tempo composto condizionale
     ]
     subjects = [
         "ben",                       # en: i                           it: io
@@ -50,11 +50,14 @@ class TurkishVerb(Verb):
             [["hikaye birleşik zaman"], [*self.tenses, *self.modalities[1:4]], self.subjects],
             [["rivayet birleşik zaman"], [self.tenses[0], *self.tenses[2:], *self.modalities[1:4]], self.subjects],
             [["şart birleşik zaman"], [*self.tenses, self.modalities[3]], self.subjects],
+            [["mastar kipi"]],
+            [["ortaç kipi"]],
+            [["ulaç kipi"]]
         ]:
             self["conjugations"].update(create_dict(*i))
 
     async def conjugate(self):
-        verb = self["verb"].replace("mek", "")
+        verb = self["verb"][:-3]
         chart = TurkishVerbChart(verb)
         for tenses, suffix, mode in [
             (self.tenses, "", "haber kipi"),
@@ -81,4 +84,9 @@ class TurkishVerb(Verb):
                     chart.add_suffix(chart.MAP[tense])
                 chart.word = verb
                 chart.suffixes = []
+        for mode in ["mastar kipi", "ulaç kipi", "ortaç kipi"]:
+            chart.add_suffix(chart.MAP[mode])
+            self["conjugations"][mode] = chart.word
+            chart.word = verb
+            chart.suffixes = []
         await asyncio.sleep(0)

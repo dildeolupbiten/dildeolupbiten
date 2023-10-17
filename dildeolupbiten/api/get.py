@@ -45,7 +45,7 @@ async def get(title, verb_model, verb_class, get_conjugations):
                             if get_conjugations:
                                 verb = await get_conjugations(verb_class(verb=missing))
                             else:
-                                verb = verb_class(verb=missing[:-3])
+                                verb = verb_class(verb=missing)
                                 await verb.conjugate()
                             if verb:
                                 verb = verb_model(verb=verb)
@@ -65,7 +65,7 @@ async def get(title, verb_model, verb_class, get_conjugations):
                     if get_conjugations:
                         verb = await get_conjugations(verb_class(verb=args["verb"]))
                     else:
-                        verb = verb_class(verb=args["verb"][:-3])
+                        verb = verb_class(verb=args["verb"])
                         await verb.conjugate()
                     if verb:
                         verb = verb_model(verb=verb)

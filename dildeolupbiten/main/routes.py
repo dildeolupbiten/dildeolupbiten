@@ -32,8 +32,3 @@ def articles():
     if "articles" in request.form:
         return Response(json.dumps(order_articles(get_articles(get_all_articles()))), 200)
     return render_template("main/articles.html", title='Articles')
-
-
-@main.route("/about")
-def about():
-    return render_template("main/about.html", title='About')
