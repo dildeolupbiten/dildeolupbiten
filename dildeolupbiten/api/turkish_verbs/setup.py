@@ -122,7 +122,11 @@ class TurkishVerbChart:
         exceptional_suffixes = ["ecek", "se", "di", "miş", "meli", "mek"]
         suffixes_1 = ["r", "ecek", "acak", "e", "a", "miş", "mış", "muş", "müş"]
         if suffix == "r":
-            if len(self.word) >= 4 and (self.word.endswith("er") or self.word.endswith("ar")):
+            if (
+                len(self.word) >= 4
+                and
+                any(self.word.endswith(i) for i in ["er", "ar", "en", "an"])
+            ) or (len(self.word) == 4 and any(self.word.endswith(i) for i in ["et", "at"])):
                 suffix = self.vowel_harmony("i", [self.BACK, self.FRONT]) + suffix
                 return self.vowel_harmony(suffix, [self.ROUNDED, self.UNROUNDED])
             if self.word == "gül":
@@ -213,7 +217,7 @@ class TurkishVerbChart:
         if suffix and suffix[0] in self.VOWELS and self.word[-1] in self.HARD:
             exceptions = ["et", "git"]
             suffixes = ["ecek", "acak", "iyor", "ıyor", "uyor", "üyor", "e", "a", "er", "erek", "arak"]
-            if suffix in suffixes and (self.word in exceptions or self.word.endswith("et")):
+            if len(self.word) > 4 and suffix in suffixes and (self.word in exceptions or self.word.endswith("et")):
                 self.word = self.word[:-1] + self.SOFT[self.HARD.index(self.word[-1])]
         if suffix and suffix[-1] in "mz":
             suffixes = ["ecek", "acak"]
