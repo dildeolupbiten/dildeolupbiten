@@ -22,6 +22,7 @@ def create_app():
     from dildeolupbiten.articles.routes import articles
     from dildeolupbiten.api.italian_verbs.routes import italian_verbs
     from dildeolupbiten.api.turkish_verbs.routes import turkish_verbs
+    from dildeolupbiten.apps.wfm.routes import wfm
     import dildeolupbiten.users.models
     import dildeolupbiten.articles.models
     import dildeolupbiten.comments.models
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(main)
     app.register_blueprint(italian_verbs)
     app.register_blueprint(turkish_verbs)
+    app.register_blueprint(wfm)
     app.jinja_env.globals.update(str=str)
     app.jinja_env.globals.update(isinstance=isinstance)
     app.jinja_env.globals.update(list=list)

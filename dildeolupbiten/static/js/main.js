@@ -782,3 +782,20 @@ function init_categories() {
         console.error(error);
     });
 }
+
+function create_table(data, columns) {
+    var text = "<table><tr>";
+    for (var column of columns) {
+        text += `<th class="p-2 border border-secondary bg-dark">${column}</th>`;
+    }
+    text += "</tr>"
+    for (var row of data) {
+        text += "<tr>";
+        for (var col of row) {
+            text += `<td class="p-2 border border-secondary">${col}</td>`;
+        }
+        text += "</tr>";
+    }
+    text += "</tr></table>";
+    return text;
+}

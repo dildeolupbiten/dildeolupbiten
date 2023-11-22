@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <div class="p-4 text-center bg-dark border-top border-bottom border-secondary" style="color: #999999;"><h2>WFM</h2></div>
+    <div id="main" class="w-100 border-left border-right border-bottom border-secondary bg-dark" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); background-repeat: no-repeat; background-size: cover;"></div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock content %}
