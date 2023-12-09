@@ -74,7 +74,7 @@ function headcount() {
     var table_div = document.createElement("div");
     var table = document.createElement("table");
     var tr = document.createElement("tr");
-    container.className = "border border-dark m-4 pt-2 pl-2 pr-2 text-center bg-dark";
+    container.className = "m-4 text-center bg-dark";
     table.className = "table-sm table-dark table-bordered container";
     d_flex.data = {};
     d_flex.data["sum"] = 0;
@@ -255,7 +255,7 @@ function collapse(parent, columns) {
     for (var [k, v] of Object.entries(columns)) {
         var btn = document.createElement("button");
         var collapse = document.createElement("div");
-        btn.className = "btn btn-dark flex-column m-2 col-2 border border-secondary";
+        btn.className = "btn btn-dark flex-column m-4 col-2 border border-secondary";
         btn.setAttribute("data-toggle", "collapse");
         btn.setAttribute("data-target", `#collapse-${k}`);
         btn.setAttribute("aria-expanded", false);
@@ -287,7 +287,7 @@ function control_row(e, result) {
         split = split.slice(0, -1);
     }
     e.target.value = split.join("\n");
-    result.innerHTML = sum(split.map(i => parseFloat(i)));
+    result.innerHTML = sum(split.map(i => parseFloat(i.replace(",", "."))));
 }
 
 function trend_form() {
@@ -353,11 +353,12 @@ function range_form(parent, columns, main_table) {
     table.append(tr);
     d_flex.data = {};
     table.className = "table table-dark table-bordered container";
+    table_div.className = "m-4"
     function query(media) {
         if (media.matches) {
             container.className = "border border-secondary text-center bg-dark";
         } else {
-            container.className = "border border-secondary m-4 pt-2 pl-2 pr-2 text-center bg-dark";
+            container.className = "border border-secondary pt-2 pl-2 pr-2 text-center bg-dark";
         }
     }
     var media = window.matchMedia("(max-width: 600px)")
@@ -511,10 +512,10 @@ function analyze(hc, trend, input, offline_activity, main_table) {
     var shrinkage = parseFloat(input["Shrinkage"].value);
     var work_hour = parseFloat(input["Work Hour"].value);
     var daily_hc = parseInt(hc["Daily HC"].innerHTML);
-    var trend = trend["Trend"].value.split("\n").map(i => parseFloat(i));
+    var trend = trend["Trend"].value.split("\n").map(i => parseFloat(i.replace(",", ".")));
     var activities = get_activities(offline_activity);
     var volumes = trend.map(i => i * volume);
-    var needs = [...Array(24).keys()].map(i => volumes[i] * aht / (3600 * (1 - shrinkage)));
+    var needs = [...Array(24).keys()].map(i => volumes[i] * aht / 3600);
     var results = {}
     for (var i of [3, 4, 5]) {
         var combs = combinations([...Array(24).keys()], i);
@@ -524,17 +525,23 @@ function analyze(hc, trend, input, offline_activity, main_table) {
         }
         results[i] = result;
         for (var [k, v] of Object.entries(result)) {
-            var opt = document.createElement("option");
-            opt.value = k;
-            opt.innerHTML = k;
-            main_table.data["Shift"].append(opt);
+            if (Object.keys(results).length <= 1) {
+                var opt = document.createElement("option");
+                opt.value = k;
+                opt.innerHTML = k;
+                main_table.data["Shift"].append(opt);
+            }
         }
         var opt = document.createElement("option");
         opt.value = i;
         opt.innerHTML = i;
         main_table.data["N Shift"].append(opt);
     }
-    main_table.data["N Shift"].onchange = function (e) { change_selections(e, main_table, results)}
+    if (Object.keys(results).length == 0) {
+        alert("No combination found!");
+        return;
+    }
+    main_table.data["N Shift"].onchange = function (e) { change_selections(e, main_table, results, needs, volumes, aht, trend)}
     main_table.data["Shift"].onchange = function (e) { change_values(e, main_table, results, needs, volumes, aht, trend) }
     change_values(null, main_table, results, needs, volumes, aht, trend);
 }
@@ -558,44 +565,9 @@ function change_values(e, main_table, results, needs, volumes, aht, trend) {
         }
     }
     change_colors(main_table.data, all);
-    main_table.data["container"].append(main_table.data["canvas"]);
-    var xValues = [...Array(24).keys()].map(i => (i <= 9) ? `0${i}:00` : `${i}:00`);
-    new Chart("canvas", {
-        type: "line",
-        data: {
-            labels: xValues,
-            datasets: [
-                {
-                    label: "Need",
-                    data: all["Need"],
-                    borderColor: "red",
-                    fill: false
-                },
-                {
-                    label: "Actual",
-                    data: all["Actual"],
-                    borderColor: "green",
-                    fill: false
-                }
-            ]
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Time"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "HC"
-                    }
-                }
-            }
-        }
-    });
+    main_table.data["chart"].data.datasets[0].data = all["Need"];
+    main_table.data["chart"].data.datasets[1].data = all["Actual"];
+    main_table.data["chart"].update();
 }
 
 function empty(main_table, key) {
@@ -605,7 +577,7 @@ function empty(main_table, key) {
     }
 }
 
-function change_selections(e, main_table, results) {
+function change_selections(e, main_table, results, needs, volumes, aht, trend) {
     empty(main_table, "Shift");
     for (var [k, v] of Object.entries(results[parseInt(e.target.value)]))  {
         var opt = document.createElement("option");
@@ -613,6 +585,7 @@ function change_selections(e, main_table, results) {
         opt.innerHTML =k;
         main_table.data["Shift"].append(opt);
     }
+    change_values(null, main_table, results, needs, volumes, aht, trend)
 }
 
 function create_table(parent, columns) {
@@ -629,7 +602,7 @@ function create_table(parent, columns) {
         if (media.matches) {
             container.className = "border border-secondary text-center bg-dark";
         } else {
-            container.className = "border border-secondary m-4 pt-2 pl-2 pr-2 text-center bg-dark";
+            container.className = "border border-secondary pt-2 pl-2 pr-2 text-center bg-dark";
         }
     }
     var media = window.matchMedia("(max-width: 600px)")
@@ -689,8 +662,47 @@ function create_table(parent, columns) {
     d_flex.data["canvas"] = canvas;
     d_flex.data["container"] = container;
     container.append(table_div);
+    container.append(canvas);
     d_flex.append(container);
     document.getElementById(parent).append(d_flex);
+    var xValues = [...Array(24).keys()].map(i => (i <= 9) ? `0${i}:00` : `${i}:00`);
+    var chart = new Chart("canvas", {
+        type: "line",
+        data: {
+            labels: xValues,
+            datasets: [
+                {
+                    label: "Need",
+                    data: [],
+                    borderColor: "red",
+                    fill: false
+                },
+                {
+                    label: "Actual",
+                    data: [],
+                    borderColor: "green",
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Time"
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "HC"
+                    }
+                }
+            }
+        }
+    });
+    d_flex.data["chart"] = chart;
     return d_flex;
 }
 

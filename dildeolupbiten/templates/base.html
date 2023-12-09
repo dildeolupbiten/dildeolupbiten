@@ -30,14 +30,6 @@
                 </a>
             </div>
             <div class="navbar-nav">
-                <a class="nav-item nav-link nav-header" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-controls="apps" href="#apps">
-                    Apps
-                </a>
-                <div class="dropdown" id="apps" style="opacity:0.7;">
-                    <div class="dropdown-menu bg-dark text-light" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item bg-dark text-light" href="{{ url_for('wfm.index') }}">WFM</a>
-                    </div>
-                </div>
                 <a class="nav-item nav-link nav-header" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-controls="api" href="#api">
                     API
                 </a>
@@ -45,6 +37,14 @@
                     <div class="dropdown-menu bg-dark text-light" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item bg-dark text-light" href="{{ url_for('italian_verbs.get_verb') }}">Italian Verbs</a>
                         <a class="dropdown-item bg-dark text-light" href="{{ url_for('turkish_verbs.get_verb') }}">Turkish Verbs</a>
+                    </div>
+                </div>
+                <a class="nav-item nav-link nav-header" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-controls="apps" href="#apps">
+                    Apps
+                </a>
+                <div class="dropdown" id="apps" style="opacity:0.7;">
+                    <div class="dropdown-menu bg-dark text-light" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item bg-dark text-light" href="{{ url_for('wfm.index') }}">WFM</a>
                     </div>
                 </div>
                 <a class="nav-item nav-link nav-header" href="{{ url_for('main.articles') }}">Articles</a>
