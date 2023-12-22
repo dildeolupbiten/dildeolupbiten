@@ -335,7 +335,203 @@ function trend_form() {
     return d_flex;
 }
 
-function range_form(parent, columns, main_table) {
+function planning_section(parent, columns, values) {
+    var d_flex = document.createElement("div");
+    d_flex.data = {};
+    var container = document.createElement("div");
+    var table_div = document.createElement("div");
+    var button_div = document.createElement("div");
+    var result_div = document.createElement("div");
+    var table = document.createElement("table");
+    var trh = document.createElement("tr");
+    var trd = document.createElement("tr");
+    container.className = "border border-secondary mb-4 p-2 text-center bg-dark";
+    table.className = "table-sm table-dark table-bordered container";
+    for (var i = 0; i < columns.length; i++) {
+        var th = document.createElement("th");
+        th.innerHTML = columns[i];
+        th.className = "col-3";
+        trh.append(th);
+        var td = document.createElement("td");
+        td.className = "col-3";
+        if (columns[i] == "Days") {
+            var input = document.createElement("input");
+            input.min = 0;
+            input.max = 7 * 52;
+            input.value = 0;
+            input.step = 7;
+            input.type = "number";
+            input.className += " col form-control bg-dark text-light border-secondary";
+            td.append(input);
+            d_flex.data[columns[i]] = input;
+        } else {
+            td.innerHTML = 0;
+            d_flex.data[columns[i]] = td;
+        }
+        trd.append(td);
+    }
+    table.append(trh);
+    table.append(trd);
+    table_div.append(table);
+    var button = document.createElement("button");
+    button.innerHTML = "Create Shift Plan";
+    button.className = "col-3 btn btn-dark border-secondary m-4";
+    button_div.append(button);
+    container.append(table_div);
+    container.append(button_div);
+    container.append(result_div);
+    d_flex.append(container);
+    document.getElementById(parent).append(d_flex);
+    button.onclick = function (e) { request_for_shift_plan(d_flex.data, result_div) }
+    return d_flex;
+}
+
+function request_for_shift_plan(data, result_div) {
+    var form = new FormData();
+    for (var child of result_div.children) {
+        result_div.removeChild(child);
+    }
+    form.append("shift_plan", true);
+    form.append("Total HC", data["Total HC"].innerHTML);
+    form.append("Shift", data["Shift"].innerHTML);
+    form.append("Days", data["Days"].value);
+    form.append("Off Day", data["Off Day"].innerHTML);
+    fetch("/wfm", {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
+        }
+    })
+    .then(function(plan) {
+        if (plan.length == 0) {
+            alert("An error occurred");
+            return;
+        }
+        result_div.append(shift_plan_table(plan, data["Shift"].innerHTML));
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
+}
+
+function shift_plan_table(plan, shifts) {
+    var [shift_plan, dist] = plan;
+    var shifts = shifts.split(",").map(i => parseInt(i));
+    var d_flex = document.createElement("div");
+    var container = document.createElement("div");
+    var table_div = document.createElement("div");
+    var table = document.createElement("table");
+    var colors = ["#000066", "#ffff66", "#cc6600", "#666600", "#006666"];
+    table.className = "table table-sm table-dark table-bordered container";
+    table_div.className = "m-4"
+    table_div.style.maxHeight = "20rem";
+    table_div.style.overflowY = "auto";
+    container.className = "text-center bg-dark";
+    var trh = document.createElement("tr");
+    for (var col = 0; col < shift_plan[0].length; col++) {
+        var th = document.createElement("th");
+        if (col == 0) {
+            th.innerHTML = "";
+            th.style.width = "5rem";
+        } else {
+            var btn = document.createElement("button");
+            btn.innerHTML = col
+            btn.className = "btn btn-dark";
+            btn.style.width = "3rem";
+            th.append(btn);
+        }
+        trh.append(th);
+    }
+    table.append(trh);
+    for (var row = 0; row < shift_plan.length; row++) {
+        var tr = document.createElement("tr");
+        for (var col = 0; col < shift_plan[row].length + 1; col++) {
+            if (col == 1) {
+                continue;
+            }
+            var td = document.createElement("td");
+            if (col == 0) {
+                var int = row + 1;
+                var len = 3 - `${int}`.length;
+                var zeros = [...Array(len).keys()].map(i => 0).join("");
+                td.innerHTML = (row + 1 < 100) ? `${zeros}${row + 1}` : (row + 1);
+                td.style.width = "5rem";
+            } else {
+                td.innerHTML = shift_plan[row][col - 1];
+                td.style.width = "3rem";
+                if (shift_plan[row][col - 1] == "OFF") {
+                    td.style.background = "#606060"
+                } else {
+                    td.style.background = colors[shifts.indexOf(shift_plan[row][col - 1])];
+                }
+            }
+            tr.append(td);
+        }
+        table.append(tr);
+    }
+    table_div.append(table);
+    container.append(table_div);
+    result_table(d_flex, dist, shifts, colors);
+    d_flex.append(container);
+    return d_flex;
+}
+
+function result_table(parent, dist, shifts, colors) {
+    var shifts = ["OFF", ...shifts];
+    var colors = ["#606060", ...colors];
+    var d_flex = document.createElement("div");
+    var container = document.createElement("div");
+    var table_div = document.createElement("div");
+    var table = document.createElement("table");
+    table.className = "table table-sm table-dark table-bordered container";
+    table_div.className = "m-4";
+    table_div.style.overflowX = "auto";
+    container.className = "text-center bg-dark";
+    var trh = document.createElement("tr");
+    for (var col = 0; col < dist[0].length + 1; col++) {
+        var th = document.createElement("th");
+        if (col == 0) {
+            th.innerHTML = "";
+            th.style.width = "5rem";
+        } else {
+            var btn = document.createElement("button");
+            btn.innerHTML = col
+            btn.className = "btn btn-dark";
+            btn.style.width = "3rem";
+            th.append(btn);
+        }
+        trh.append(th);
+    }
+    table.append(trh);
+    for (var row = 0; row < dist.length; row++) {
+        var tr = document.createElement("tr");
+        for (var col = 0; col < dist[row].length + 1; col++) {
+            var td = document.createElement("td");
+            if (col == 0) {
+                td.innerHTML = shifts[row];
+                td.style.background = colors[row];
+                td.style.width = "5rem";
+            } else {
+                td.innerHTML = dist[row][col - 1];
+                td.style.width = "3rem";
+            }
+            tr.append(td);
+        }
+        table.append(tr);
+    }
+    table_div.append(table);
+    container.append(table_div);
+    d_flex.append(container);
+    parent.append(d_flex);
+    return d_flex;
+}
+
+function range_form(parent, columns, main_table, plan_section) {
     var d_flex = document.createElement("div");
     var hc = headcount();
     var container = document.createElement("div");
@@ -422,7 +618,7 @@ function range_form(parent, columns, main_table) {
     var btn = document.createElement("button");
     btn.className = "btn btn-outline-secondary m-4";
     btn.innerHTML = "Analyze";
-    btn.onclick = function (e) { analyze(hc.data, trend.data, d_flex.data, offline_activity.data, main_table) }
+    btn.onclick = function (e) { analyze(hc.data, trend.data, d_flex.data, offline_activity.data, main_table, plan_section) }
     container.append(btn);
     document.getElementById(parent).append(d_flex);
     return d_flex;
@@ -504,7 +700,7 @@ function get_results(combs, daily_hc, activities, work_hour, needs, trend) {
     return result;
 }
 
-function analyze(hc, trend, input, offline_activity, main_table) {
+function analyze(hc, trend, input, offline_activity, main_table, plan_section) {
     empty(main_table, "N Shift");
     empty(main_table, "Shift");
     var volume = parseInt(input["Volume"].value);
@@ -541,12 +737,15 @@ function analyze(hc, trend, input, offline_activity, main_table) {
         alert("No combination found!");
         return;
     }
-    main_table.data["N Shift"].onchange = function (e) { change_selections(e, main_table, results, needs, volumes, aht, trend)}
-    main_table.data["Shift"].onchange = function (e) { change_values(e, main_table, results, needs, volumes, aht, trend) }
-    change_values(null, main_table, results, needs, volumes, aht, trend);
+    plan_section.data["Total HC"].innerHTML = hc["Total HC"].innerHTML;
+    plan_section.data["Shift"].innerHTML = main_table.data["Shift"].value;
+    plan_section.data["Off Day"].innerHTML = input["Off Day"].value;
+    main_table.data["N Shift"].onchange = function (e) { change_selections(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc)}
+    main_table.data["Shift"].onchange = function (e) { change_values(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc) }
+    change_values(null, main_table, results, needs, volumes, aht, trend, plan_section, input, hc);
 }
 
-function change_values(e, main_table, results, needs, volumes, aht, trend) {
+function change_values(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc) {
     var n_shift = parseInt(main_table.data["N Shift"].value);
     var values = e ? results[n_shift][e.target.value] : results[n_shift][Object.keys(results[n_shift])[0]];
     var all = {
@@ -565,6 +764,9 @@ function change_values(e, main_table, results, needs, volumes, aht, trend) {
         }
     }
     change_colors(main_table.data, all);
+    plan_section.data["Total HC"].innerHTML = hc["Total HC"].innerHTML;
+    plan_section.data["Shift"].innerHTML = main_table.data["Shift"].value;
+    plan_section.data["Off Day"].innerHTML = input["Off Day"].value;
     main_table.data["chart"].data.datasets[0].data = all["Need"];
     main_table.data["chart"].data.datasets[1].data = all["Actual"];
     main_table.data["chart"].update();
@@ -577,7 +779,7 @@ function empty(main_table, key) {
     }
 }
 
-function change_selections(e, main_table, results, needs, volumes, aht, trend) {
+function change_selections(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc) {
     empty(main_table, "Shift");
     for (var [k, v] of Object.entries(results[parseInt(e.target.value)]))  {
         var opt = document.createElement("option");
@@ -585,7 +787,7 @@ function change_selections(e, main_table, results, needs, volumes, aht, trend) {
         opt.innerHTML =k;
         main_table.data["Shift"].append(opt);
     }
-    change_values(null, main_table, results, needs, volumes, aht, trend)
+    change_values(null, main_table, results, needs, volumes, aht, trend, plan_section, input, hc)
 }
 
 function create_table(parent, columns) {
@@ -721,6 +923,11 @@ function run() {
             "Idle": {}
         }
     )
+    var planning = planning_section(
+        "main",
+        columns=["Total HC", "Shift", "Days", "Off Day"],
+        values=[]
+    );
     var input = range_form(
         "main",
         columns={
@@ -730,9 +937,10 @@ function run() {
             "Work Hour": {"min": 0, "max": 24, "step": .25, "type": "number"},
             "Off Day": {"min": 0, "max": 7, "step": 1, "type": "number"},
         },
-        main_table=analysis
+        main_table=analysis,
+        plan_section=planning
     );
-    var col = collapse("main", {"Input": input, "Analysis": analysis});
+    var col = collapse("main", {"Input": input, "Analysis": analysis, "Planning": planning});
 }
 
 run();
