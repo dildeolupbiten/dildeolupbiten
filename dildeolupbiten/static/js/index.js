@@ -458,7 +458,7 @@ function shift_plan_table(plan, shifts) {
             if (col == 0) {
                 var int = row + 1;
                 var len = 3 - `${int}`.length;
-                var zeros = [...Array(len).keys()].map(i => 0).join("");
+                var zeros = [...Array(len).keys()].map(i => "\u2800").join("");
                 td.innerHTML = (row + 1 < 100) ? `${zeros}${row + 1}` : (row + 1);
                 td.style.width = "5rem";
             } else {
