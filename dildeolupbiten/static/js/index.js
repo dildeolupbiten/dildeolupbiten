@@ -335,7 +335,7 @@ function trend_form() {
     return d_flex;
 }
 
-function planning_section(parent, columns, values) {
+function planning_section(columns, values) {
     var d_flex = document.createElement("div");
     d_flex.data = {};
     var container = document.createElement("div");
@@ -345,7 +345,7 @@ function planning_section(parent, columns, values) {
     var table = document.createElement("table");
     var trh = document.createElement("tr");
     var trd = document.createElement("tr");
-    container.className = "border border-secondary mb-4 p-2 text-center bg-dark";
+    container.className = "text-center bg-dark";
     table.className = "table-sm table-dark table-bordered container";
     for (var i = 0; i < columns.length; i++) {
         var th = document.createElement("th");
@@ -375,13 +375,12 @@ function planning_section(parent, columns, values) {
     table_div.append(table);
     var button = document.createElement("button");
     button.innerHTML = "Create Shift Plan";
-    button.className = "col-3 btn btn-dark border-secondary m-4";
+    button.className = "col-3 btn btn-dark border-secondary m-4 text-secondary";
     button_div.append(button);
     container.append(table_div);
     container.append(button_div);
     container.append(result_div);
     d_flex.append(container);
-    document.getElementById(parent).append(d_flex);
     button.onclick = function (e) { request_for_shift_plan(d_flex.data, result_div) }
     return d_flex;
 }
@@ -412,15 +411,16 @@ function request_for_shift_plan(data, result_div) {
             alert("An error occurred");
             return;
         }
-        result_div.append(shift_plan_table(plan, data["Shift"].innerHTML));
+        result_div.append(shift_plan_table(plan, data["Shift"].innerHTML, data["Work Hour"], data["Activities"], data["Needs"], data["Trend"], data["main_table"], data["Volumes"], data["aht"], data["plan_section"], data["Input"], data["HC"]));
     })
     .catch(function(error) {
         console.error(error);
     });
 }
 
-function shift_plan_table(plan, shifts) {
+function shift_plan_table(plan, shifts, work_hour, activities, needs, trend, main_table, volumes, aht, plan_section, input, hc) {
     var [shift_plan, dist] = plan;
+    work_hour = parseFloat(work_hour);
     var shifts = shifts.split(",").map(i => parseInt(i));
     var d_flex = document.createElement("div");
     var container = document.createElement("div");
@@ -428,7 +428,6 @@ function shift_plan_table(plan, shifts) {
     var table = document.createElement("table");
     var colors = ["#000066", "#ffff66", "#cc6600", "#666600", "#006666"];
     table.className = "table table-sm table-dark table-bordered container";
-    table_div.className = "m-4"
     table_div.style.maxHeight = "20rem";
     table_div.style.overflowY = "auto";
     container.className = "text-center bg-dark";
@@ -439,11 +438,10 @@ function shift_plan_table(plan, shifts) {
             th.innerHTML = "";
             th.style.width = "5rem";
         } else {
-            var btn = document.createElement("button");
-            btn.innerHTML = col
-            btn.className = "btn btn-dark";
-            btn.style.width = "3rem";
-            th.append(btn);
+            var label = document.createElement("label");
+            label.innerHTML = col
+            label.style.width = "3rem";
+            th.append(label);
         }
         trh.append(th);
     }
@@ -476,12 +474,12 @@ function shift_plan_table(plan, shifts) {
     }
     table_div.append(table);
     container.append(table_div);
-    result_table(d_flex, dist, shifts, colors);
     d_flex.append(container);
+    result_table(d_flex, dist, shifts, colors, work_hour, activities, needs, trend, main_table, volumes, aht, plan_section, input, hc);
     return d_flex;
 }
 
-function result_table(parent, dist, shifts, colors) {
+function result_table(parent, dist, shifts, colors, work_hour, activities, needs, trend, main_table, volumes, aht, plan_section, input, hc) {
     var shifts = ["OFF", ...shifts];
     var colors = ["#606060", ...colors];
     var d_flex = document.createElement("div");
@@ -489,7 +487,6 @@ function result_table(parent, dist, shifts, colors) {
     var table_div = document.createElement("div");
     var table = document.createElement("table");
     table.className = "table table-sm table-dark table-bordered container";
-    table_div.className = "m-4";
     table_div.style.overflowX = "auto";
     container.className = "text-center bg-dark";
     var trh = document.createElement("tr");
@@ -503,6 +500,7 @@ function result_table(parent, dist, shifts, colors) {
             btn.innerHTML = col
             btn.className = "btn btn-dark";
             btn.style.width = "3rem";
+            btn.onclick = function (e) { display_daily_shifts(e, dist, shifts.slice(1, shifts.length), work_hour, activities, needs, trend, main_table, volumes, aht, plan_section, input, hc) };
             th.append(btn);
         }
         trh.append(th);
@@ -531,6 +529,40 @@ function result_table(parent, dist, shifts, colors) {
     return d_flex;
 }
 
+function display_daily_shifts(e, dist, shifts, work_hour, activities, needs, trend, main_table, volumes, aht, plan_section, input, hc) {
+    var col = parseInt(e.target.innerHTML) - 1;
+    var shift_hc = dist.map(row => row[col]);
+    var total_hc = [...Array(24).keys()].map(i => 0);
+    shift_hc = shift_hc.slice(1, shift_hc.length);
+    shift_hc = [...Array(shift_hc.length).keys()].map(i => [shifts[i], shift_hc[i]]);
+    var leak_hour = work_hour - parseInt(work_hour);
+    work_hour += leak_hour;
+    for (var [shift, hc] of shift_hc) {
+        for (var hour = 0; hour < work_hour; hour++) {
+            if ((hour + 1 == work_hour) & (leak_hour != 0)) {
+                total_hc[(shift + hour) % 24] += (hc * leak_hour);
+            } else {
+                total_hc[(shift + hour) % 24] += hc;
+            }
+        }
+    }
+    var data = {
+        "shifts": shifts,
+        "activities": activities,
+        "work_hour": work_hour,
+        "needs": needs,
+        "trend": trend,
+        "total_hc": total_hc,
+        "volumes": volumes,
+        "aht": aht,
+        "plan_section": plan_section,
+        "input": input,
+        "hc": hc
+    }
+    var results = get_results([shifts], null, activities, work_hour, needs, trend, total_hc);
+    change_values(null, main_table, results[shifts.join(",")], needs, volumes, aht, trend, plan_section, input, hc);
+}
+
 function range_form(parent, columns, main_table, plan_section) {
     var d_flex = document.createElement("div");
     var hc = headcount();
@@ -549,7 +581,7 @@ function range_form(parent, columns, main_table, plan_section) {
     table.append(tr);
     d_flex.data = {};
     table.className = "table table-dark table-bordered container";
-    table_div.className = "m-4"
+    table_div.className = "m-4";
     function query(media) {
         if (media.matches) {
             container.className = "border border-secondary text-center bg-dark";
@@ -638,28 +670,41 @@ function get_activities(activities) {
     return table;
 }
 
-function get_coverage(hc, needs) {
+function get_coverage(hc, needs, hc_shift) {
     var coverage = [];
     for (var i = 0; i < hc.length; i++) {
         if (hc[i] > needs[i]) {
             coverage.push(hc[i] / needs[i]);
+        } else {
+            if (hc_shift) {
+                coverage.push(hc[i] / needs[i]);
+            }
         }
+    }
+    if (hc_shift) {
+        return coverage;
     }
     return (coverage.length == 24) ? coverage : null;
 }
 
-function get_results(combs, daily_hc, activities, work_hour, needs, trend) {
+function get_results(combs, daily_hc, activities, work_hour, needs, trend, hc_shift) {
     var result = {};
     var leak_hour = work_hour - parseInt(work_hour);
     work_hour = parseInt(work_hour);
     for (var comb of combs) {
-        var hc = [...Array(24).keys()].map(i => 0);
+        if (!hc_shift) {
+            var hc = [...Array(24).keys()].map(i => 0);
+        } else {
+            var hc = hc_shift;
+        }
         for (var hour of comb) {
-            for (var i = 0; i < work_hour; i++) {
-                hc[(hour + i) % 24] += daily_hc / comb.length;
-            }
-            if (leak_hour > 0) {
-                hc[(hour + work_hour) % 24] += (daily_hc / comb.length) * leak_hour;
+            if (!hc_shift) {
+                for (var i = 0; i < work_hour; i++) {
+                    hc[(hour + i) % 24] += daily_hc / comb.length;
+                }
+                if (leak_hour > 0) {
+                    hc[(hour + work_hour) % 24] += (daily_hc / comb.length) * leak_hour;
+                }
             }
             for (var activity of activities) {
                 var start = activity[0];
@@ -672,20 +717,32 @@ function get_results(combs, daily_hc, activities, work_hour, needs, trend) {
                 while (start != parseInt(end)) {
                     var int = parseInt(start);
                     if (start != int) {
-                        hc[(hour + int) % 24] -= 1/size * (1 - (start - int)) * (daily_hc / comb.length);
+                        if (!hc_shift) {
+                            hc[(hour + int) % 24] -= 1/size * (1 - (start - int)) * (daily_hc / comb.length);
+                        } else {
+                            hc[(hour + int) % 24] *= (1 - 1/size * (1 - (start - int)));
+                        }
                         start += 1 - (start - int);
                     } else {
-                        hc[(hour + start) % 24] -= 1/size * (daily_hc / comb.length);
+                        if (!hc_shift) {
+                            hc[(hour + start) % 24] -= 1/size * (daily_hc / comb.length);
+                        } else {
+                            hc[(hour + start) % 24] *= 1 - (1 / size);
+                        }
                         start += 1;
                     }
                 }
                 var int = parseInt(end);
                 if (int != end) {
-                    hc[(hour + int) % 24] -= 1/size * (1 - (end - int)) * (daily_hc / comb.length);
+                    if (!hc_shift) {
+                        hc[(hour + int) % 24] -= 1/size * (1 - (end - int)) * (daily_hc / comb.length);
+                    } else {
+                        hc[(hour + int) % 24] *= (1 - 1/size * (1 - (end - int)));
+                    }
                 }
             }
         }
-        var coverage = get_coverage(hc, needs);
+        var coverage = get_coverage(hc, needs, hc_shift);
         if (coverage) {
             var occupancy = coverage.map(i => ((i <= 1) ? 1 : (1 / i)));
             var idle = [...Array(24).keys()].map(i => trend[i] * (1 - occupancy[i]) / occupancy[i]);
@@ -715,7 +772,7 @@ function analyze(hc, trend, input, offline_activity, main_table, plan_section) {
     var results = {}
     for (var i of [3, 4, 5]) {
         var combs = combinations([...Array(24).keys()], i);
-        var result = get_results(combs, daily_hc, activities, work_hour, needs, trend);
+        var result = get_results(combs, daily_hc, activities, work_hour, needs, trend, null);
         if (Object.keys(result).length == 0) {
             continue;
         }
@@ -739,7 +796,17 @@ function analyze(hc, trend, input, offline_activity, main_table, plan_section) {
     }
     plan_section.data["Total HC"].innerHTML = hc["Total HC"].innerHTML;
     plan_section.data["Shift"].innerHTML = main_table.data["Shift"].value;
+    plan_section.data["Work Hour"] = work_hour;
     plan_section.data["Off Day"].innerHTML = input["Off Day"].value;
+    plan_section.data["Activities"] = activities;
+    plan_section.data["Needs"] = needs;
+    plan_section.data["Trend"] = trend;
+    plan_section.data["main_table"] = main_table;
+    plan_section.data["Volumes"] = volumes;
+    plan_section.data["aht"] = aht;
+    plan_section.data["plan_section"] = plan_section;
+    plan_section.data["Input"] = input;
+    plan_section.data["HC"] = hc;
     main_table.data["N Shift"].onchange = function (e) { change_selections(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc)}
     main_table.data["Shift"].onchange = function (e) { change_values(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc) }
     change_values(null, main_table, results, needs, volumes, aht, trend, plan_section, input, hc);
@@ -747,7 +814,7 @@ function analyze(hc, trend, input, offline_activity, main_table, plan_section) {
 
 function change_values(e, main_table, results, needs, volumes, aht, trend, plan_section, input, hc) {
     var n_shift = parseInt(main_table.data["N Shift"].value);
-    var values = e ? results[n_shift][e.target.value] : results[n_shift][Object.keys(results[n_shift])[0]];
+    var values = results.hasOwnProperty(n_shift) ? (e ? results[n_shift][e.target.value] : results[n_shift][Object.keys(results[n_shift])[0]]) : results;
     var all = {
         "AHT": [...Array(24).keys()].map(i => aht),
         "Trend": trend,
@@ -764,7 +831,12 @@ function change_values(e, main_table, results, needs, volumes, aht, trend, plan_
         }
     }
     change_colors(main_table.data, all);
-    plan_section.data["Total HC"].innerHTML = hc["Total HC"].innerHTML;
+    try {
+        plan_section.data["Total HC"].innerHTML = hc["Total HC"].innerHTML;
+    } catch {
+        plan_section.data["Total HC"].innerHTML = hc;
+    }
+
     plan_section.data["Shift"].innerHTML = main_table.data["Shift"].value;
     plan_section.data["Off Day"].innerHTML = input["Off Day"].value;
     main_table.data["chart"].data.datasets[0].data = all["Need"];
@@ -790,7 +862,7 @@ function change_selections(e, main_table, results, needs, volumes, aht, trend, p
     change_values(null, main_table, results, needs, volumes, aht, trend, plan_section, input, hc)
 }
 
-function create_table(parent, columns) {
+function create_table(parent, columns, plan_section) {
     var d_flex = document.createElement("div");
     d_flex.columns = [...Object.keys(columns)].slice(1);
     var container = document.createElement("div");
@@ -804,7 +876,7 @@ function create_table(parent, columns) {
         if (media.matches) {
             container.className = "border border-secondary text-center bg-dark";
         } else {
-            container.className = "border border-secondary pt-2 pl-2 pr-2 text-center bg-dark";
+            container.className = "border border-secondary pt-4 pl-4 pr-4 text-center bg-dark";
         }
     }
     var media = window.matchMedia("(max-width: 600px)")
@@ -834,6 +906,7 @@ function create_table(parent, columns) {
     _table.append(_tr);
     select_div.append(_table);
     container.append(select_div);
+    container.append(plan_section);
     var tr = document.createElement("tr");
     for (var [k, v] of Object.entries(columns)) {
         var th = document.createElement("th");
@@ -909,6 +982,10 @@ function create_table(parent, columns) {
 }
 
 function run() {
+    var planning = planning_section(
+        columns=["Total HC", "Shift", "Days", "Off Day"],
+        values=[]
+    );
     var analysis = create_table(
         "main",
         columns={
@@ -921,13 +998,9 @@ function run() {
             "Coverage": {},
             "Occupancy": {},
             "Idle": {}
-        }
+        },
+        plan_section=planning
     )
-    var planning = planning_section(
-        "main",
-        columns=["Total HC", "Shift", "Days", "Off Day"],
-        values=[]
-    );
     var input = range_form(
         "main",
         columns={
@@ -940,7 +1013,7 @@ function run() {
         main_table=analysis,
         plan_section=planning
     );
-    var col = collapse("main", {"Input": input, "Analysis": analysis, "Planning": planning});
+    var col = collapse("main", {"Input": input, "Analysis": analysis});
 }
 
 run();
