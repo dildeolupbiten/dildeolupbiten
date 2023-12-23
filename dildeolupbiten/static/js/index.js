@@ -392,6 +392,7 @@ function planning_section(columns, values) {
 
 function request_for_break_plan(data, result_div) {
     if (data["break"]) {
+        alert("There's already a break!");
         return;
     }
     if (!data["plan"]) {
@@ -426,11 +427,13 @@ function request_for_break_plan(data, result_div) {
 }
 
 function change_break_plan(result_div, data, plan, index) {
-    if ((data.hasOwnProperty("break_table"))& (result_div.contains(data["break_table"]))) {
+    if ((data.hasOwnProperty("break_table")) & (result_div.contains(data["break_table"]))) {
         result_div.removeChild(data["break_table"]);
     }
-    data["break_table"] = break_plan_table(plan, data["Activities"], index);
-    result_div.append(data["break_table"]);
+    if (data["break"]) {
+        data["break_table"] = break_plan_table(plan, data["Activities"], index);
+        result_div.append(data["break_table"]);
+    }
 }
 
 function removeAll(parent) {
@@ -446,6 +449,7 @@ function break_plan_table(plan, activities, index) {
     var table_div = document.createElement("div");
     var table = document.createElement("table");
     table.className = "table table-sm table-dark table-bordered container";
+    container.className = "mb-4"
     table_div.style.maxHeight = "20rem";
     table_div.style.overflowY = "auto";
     var trh = document.createElement("tr");
@@ -591,7 +595,7 @@ function result_table(parent, dist, shifts, colors, work_hour, activities, needs
     var table = document.createElement("table");
     table.className = "table table-sm table-dark table-bordered container";
     table_div.style.overflowX = "auto";
-    container.className = "text-center bg-dark";
+    container.className = "text-center bg-dark mt-4 mb-2";
     var trh = document.createElement("tr");
     for (var col = 0; col < dist[0].length + 1; col++) {
         var th = document.createElement("th");
