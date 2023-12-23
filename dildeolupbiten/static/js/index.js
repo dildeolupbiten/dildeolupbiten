@@ -373,15 +373,104 @@ function planning_section(columns, values) {
     table.append(trh);
     table.append(trd);
     table_div.append(table);
-    var button = document.createElement("button");
-    button.innerHTML = "Create Shift Plan";
-    button.className = "col-4 btn btn-dark border-secondary m-4 text-secondary";
-    button_div.append(button);
+    var btn_shift_plan = document.createElement("button");
+    btn_shift_plan.innerHTML = "Create Shift Plan";
+    btn_shift_plan.className = "col-4 btn btn-dark border-secondary m-4 text-secondary";
+    var btn_break_plan = document.createElement("button");
+    btn_break_plan.innerHTML = "Create Break Plan";
+    btn_break_plan.className = "col-4 btn btn-dark border-secondary m-4 text-secondary";
+    button_div.append(btn_shift_plan);
+    button_div.append(btn_break_plan);
     container.append(table_div);
     container.append(button_div);
     container.append(result_div);
     d_flex.append(container);
-    button.onclick = function (e) { request_for_shift_plan(d_flex.data, result_div) }
+    btn_shift_plan.onclick = function (e) { request_for_shift_plan(d_flex.data, result_div) }
+    btn_break_plan.onclick = function (e) { request_for_break_plan(d_flex.data, result_div) }
+    return d_flex;
+}
+
+function request_for_break_plan(data, result_div) {
+    if (data["break"]) {
+        return;
+    }
+    if (!data["plan"]) {
+        alert("Create the shift plan first!");
+        return;
+    }
+    var form = new FormData();
+    form.append("break", true);
+    form.append("shift_plan", JSON.stringify(data["plan"][0]));
+    form.append("needs", JSON.stringify(data["Needs"]));
+    form.append("activities", JSON.stringify(data["Activities"]));
+    form.append("work_hour", JSON.stringify(data["Work Hour"]));
+    fetch("/wfm", {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
+        }
+    })
+    .then(function(plan) {
+        data["break"] = plan[0];
+        data["change_break_plan"] = function (index) { change_break_plan(result_div, data, plan, index) };
+        change_break_plan(result_div, data, plan, 1);
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
+}
+
+function change_break_plan(result_div, data, plan, index) {
+    if ((data.hasOwnProperty("break_table"))& (result_div.contains(data["break_table"]))) {
+        result_div.removeChild(data["break_table"]);
+    }
+    data["break_table"] = break_plan_table(plan, data["Activities"], index);
+    result_div.append(data["break_table"]);
+}
+
+function removeAll(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+function break_plan_table(plan, activities, index) {
+    var [break_plan, intervals] = plan;
+    var d_flex = document.createElement("div");
+    var container = document.createElement("div");
+    var table_div = document.createElement("div");
+    var table = document.createElement("table");
+    table.className = "table table-sm table-dark table-bordered container";
+    table_div.style.maxHeight = "20rem";
+    table_div.style.overflowY = "auto";
+    var trh = document.createElement("tr");
+    for (var i = 0; i < activities.length + 1; i++) {
+        var th = document.createElement("th");
+        if (i == 0) {
+            th.innerHTML = "Group";
+        } else {
+            th.innerHTML = `Break-${i}`;
+        }
+        trh.append(th);
+    }
+    table.append(trh);
+    for (var row = 0; row < break_plan[index].length; row++) {
+        var tr = document.createElement("tr");
+        for (var col = 0; col < break_plan[index][row].length; col++) {
+            var td = document.createElement("td");
+            td.innerHTML = break_plan[index][row][col];
+            tr.append(td);
+        }
+        table.append(tr);
+    }
+    table_div.append(table);
+    container.append(table_div);
+    d_flex.append(container);
     return d_flex;
 }
 
@@ -398,11 +487,12 @@ function request_for_shift_plan(data, result_div) {
         alert("Select days!");
         return;
     }
-    var form = new FormData();
-    for (var child of result_div.children) {
-        result_div.removeChild(child);
+    removeAll(result_div);
+    if (data.hasOwnProperty("break")) {
+        data["break"] = null;
     }
-    form.append("shift_plan", true);
+    var form = new FormData();
+    form.append("shift", true);
     form.append("Total HC", data["Total HC"].innerHTML);
     form.append("Shift", data["Shift"].innerHTML);
     form.append("Days", data["Days"].value);
@@ -423,6 +513,7 @@ function request_for_shift_plan(data, result_div) {
             alert("An error occurred");
             return;
         }
+        data["plan"] = plan;
         result_div.append(shift_plan_table(plan, data["Shift"].innerHTML, data["Work Hour"], data["Activities"], data["Needs"], data["Trend"], data["main_table"], data["Volumes"], data["aht"], data["plan_section"], data["Input"], data["HC"]));
     })
     .catch(function(error) {
@@ -548,30 +639,23 @@ function display_daily_shifts(e, dist, shifts, work_hour, activities, needs, tre
     shift_hc = shift_hc.slice(1, shift_hc.length);
     shift_hc = [...Array(shift_hc.length).keys()].map(i => [shifts[i], shift_hc[i]]);
     var leak_hour = work_hour - parseInt(work_hour);
-    work_hour += leak_hour;
-    for (var [shift, hc] of shift_hc) {
+    if (leak_hour > 0) {
+        work_hour += (1 - leak_hour);
+        work_hour = parseInt(work_hour);
+    }
+    for (var [shift, _hc] of shift_hc) {
         for (var hour = 0; hour < work_hour; hour++) {
             if ((hour + 1 == work_hour) & (leak_hour != 0)) {
-                total_hc[(shift + hour) % 24] += (hc * leak_hour);
+                total_hc[(shift + hour) % 24] += (_hc * leak_hour);
             } else {
-                total_hc[(shift + hour) % 24] += hc;
+                total_hc[(shift + hour) % 24] += _hc;
             }
         }
     }
-    var data = {
-        "shifts": shifts,
-        "activities": activities,
-        "work_hour": work_hour,
-        "needs": needs,
-        "trend": trend,
-        "total_hc": total_hc,
-        "volumes": volumes,
-        "aht": aht,
-        "plan_section": plan_section,
-        "input": input,
-        "hc": hc
-    }
     var results = get_results([shifts], null, activities, work_hour, needs, trend, total_hc);
+    if (plan_section.data.hasOwnProperty("change_break_plan")) {
+        plan_section.data["change_break_plan"](col + 1);
+    }
     change_values(null, main_table, results[shifts.join(",")], needs, volumes, aht, trend, plan_section, input, hc);
 }
 
@@ -648,7 +732,6 @@ function range_form(parent, columns, main_table, plan_section) {
     var offline_activity = activity_form(
         columns={
             "Select All": {"type": "checkbox"},
-            "Name": {"type": "input"},
             "Start": {"type": "number", "min": 0, "max": 24, "step": .25},
             "End": {"type": "number", "min": 0, "max": 24, "step": .25},
             "Interval": {"type": "number", "min": 0, "max": 24, "step": .25}
@@ -702,7 +785,10 @@ function get_coverage(hc, needs, hc_shift) {
 function get_results(combs, daily_hc, activities, work_hour, needs, trend, hc_shift) {
     var result = {};
     var leak_hour = work_hour - parseInt(work_hour);
-    work_hour = parseInt(work_hour);
+    if (leak_hour > 0) {
+        work_hour += (1 - leak_hour);
+        work_hour = parseInt(work_hour);
+    }
     for (var comb of combs) {
         if (!hc_shift) {
             var hc = [...Array(24).keys()].map(i => 0);
