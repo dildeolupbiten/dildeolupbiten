@@ -375,7 +375,7 @@ function planning_section(columns, values) {
     table_div.append(table);
     var button = document.createElement("button");
     button.innerHTML = "Create Shift Plan";
-    button.className = "col-3 btn btn-dark border-secondary m-4 text-secondary";
+    button.className = "col-4 btn btn-dark border-secondary m-4 text-secondary";
     button_div.append(button);
     container.append(table_div);
     container.append(button_div);
@@ -386,6 +386,18 @@ function planning_section(columns, values) {
 }
 
 function request_for_shift_plan(data, result_div) {
+    if (parseFloat(data["Days"].value) % 7 != 0) {
+        alert("Select 7 or times of 7!");
+        return;
+    }
+    if (data["Shift"].innerHTML == "0") {
+        alert("Fill the inputs!");
+        return;
+    }
+    if (parseInt(data["Days"].value) == 0) {
+        alert("Select days!");
+        return;
+    }
     var form = new FormData();
     for (var child of result_div.children) {
         result_div.removeChild(child);
