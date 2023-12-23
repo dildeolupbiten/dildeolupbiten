@@ -174,22 +174,20 @@ function activity_form(columns, data) {
         table.append(tr);
         for (var row of d_flex.data) {
             for (var [k, v] of Object.entries(columns)) {
-                if (k != "Name") {
-                    row[k].oninput = function (e) { activity_oninput(d_flex, data) };
-                }
+                row[k].oninput = function (e) { activity_oninput(d_flex, data) };
             }
         }
     }
     button_div.children[1].onclick = function (e) {
         var indexes = [];
         for (var child of table.children) {
-            if ((child.children[0].children[0].children[0].checked) & (child.children[1].innerHTML != "Name")) {
+            if (child.children[0].children[0].children[0].checked) {
                 indexes.push([...table.children].indexOf(child));
             }
         }
         var items = indexes.map(i => table.children[i]);
         var rows = indexes.map(i => d_flex.data[i]);
-        for (var i = 0; i < items.length; i++) {
+        for (var i = 1; i < items.length; i++) {
             table.removeChild(items[i]);
             d_flex.data.splice(d_flex.data.indexOf(rows[i]), 1);
         }
