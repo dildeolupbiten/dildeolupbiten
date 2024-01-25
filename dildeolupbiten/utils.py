@@ -342,9 +342,8 @@ class MetaHTMLCodeFormat(type):
     def reformat(cls, text: str):
         d_container = "<div class=\"container\">\n"
         d_flex = "<div class=\"d-flex\">\n"
-        d_rows = "<div class=\"bg-dark pt-2 pl-2 pr-2 rounded-left text-light\">\n"
         d_close = "\n</div>\n"
-        d_code = "<div class=\"bg-dark pt-2 pl-2 pr-2 rounded-right container\">\n"
+        d_code = "<div class=\"bg-dark pt-2 pl-2 pr-2 rounded container\">\n"
         patterns = re.findall(r'\[code="([^"]*)"](.*?)\[/code]', text, re.DOTALL)
         langs = []
         for code in sorted(set(patterns), key=patterns.index):
@@ -354,11 +353,6 @@ class MetaHTMLCodeFormat(type):
                 [
                     d_container,
                     d_flex,
-                    d_rows,
-                    "```\n",
-                    *map(lambda i: f"{i + 1}\n", range(len(_code.split("\n")))),
-                    "```\n",
-                    d_close,
                     d_code,
                     f"```{lang}\n" + _code + "\n```",
                     d_close,
