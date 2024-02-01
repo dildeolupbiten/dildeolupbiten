@@ -74,8 +74,8 @@ function headcount() {
     var table_div = document.createElement("div");
     var table = document.createElement("table");
     var tr = document.createElement("tr");
-    container.className = "m-4 text-center bg-dark";
-    table.className = "table-sm table-dark table-bordered container";
+    container.className = "text-center bg-dark mb-4";
+    table.className = "table-sm table-dark table-bordered w-100";
     d_flex.data = {};
     d_flex.data["sum"] = 0;
     for (var i of ["Total HC", "Daily HC", "Utilization Rate"]) {
@@ -108,7 +108,7 @@ function activity_form(columns, data) {
     var table_div = document.createElement("div");
     var table = document.createElement("table");
     var button_div = document.createElement("div");
-    container.className = "border border-secondary m-4 pt-2 pl-2 pr-2 text-center bg-dark";
+    container.className = "border-secondary text-center bg-dark";
     d_flex.data = [];
     h3.innerHTML = "Offline Activities";
     h3.className = "text-secondary";
@@ -120,7 +120,7 @@ function activity_form(columns, data) {
         button_div.append(btn);
     }
     container.append(button_div);
-    table.className = "table table-dark table-bordered container";
+    table.className = "table table-dark table-bordered";
     table_div.style.maxHeight = "20rem";
     table_div.style.overflowY = "auto";
     var tr = document.createElement("tr");
@@ -222,14 +222,14 @@ function activity_oninput(d_flex, data) {
         var d_flex_data = data["d_flex"].data;
         var volume = parseInt(d_flex_data["Volume"].value);
         var aht = parseFloat(d_flex_data["AHT"].value);
-        var shrinkage = parseFloat(d_flex_data["Shrinkage"].value);
+        var loss = parseFloat(d_flex_data["Loss"].value);
         var work_hour = parseFloat(d_flex_data["Work Hour"].value);
-        var off_day = parseInt(d_flex_data["Off Day"].value);
+        var off = parseInt(d_flex_data["Off"].value);
         data["Utilization Rate"].innerHTML = Math.round((work_hour - sum) / work_hour * 100) / 100;
         var ur = parseFloat(data["Utilization Rate"].innerHTML);
-        var daily_hc = volume * aht / (work_hour * 3600 * (1 - shrinkage) * ur * (7 - off_day) / 7);
+        var daily_hc = volume * aht / (work_hour * 3600 * (1 - loss) * ur * (7 - off) / 7);
         data["Daily HC"].innerHTML = parseInt(daily_hc);
-        data["Total HC"].innerHTML = parseInt(daily_hc * (7 / (7 - off_day)) / (1 - shrinkage));
+        data["Total HC"].innerHTML = parseInt(daily_hc * (7 / (7 - off)) / (1 - loss));
     }
     data["sum"] = sum;
 }
@@ -240,16 +240,6 @@ function collapse(parent, columns) {
     accordion.id = "accordion";
     accordion.className = "text-center"
     right.id = "right";
-    function query(media) {
-        if (media.matches) {
-            right.className = "";
-        } else {
-            right.className = "container";
-        }
-    }
-    var media = window.matchMedia("(max-width: 600px)")
-    query(media)
-    media.addListener(query)
     for (var [k, v] of Object.entries(columns)) {
         var btn = document.createElement("button");
         var collapse = document.createElement("div");
@@ -295,14 +285,13 @@ function trend_form() {
     var tr = document.createElement("tr");
     var h3 = document.createElement("h3");
     var result = document.createElement("label")
-    d_flex.className = "d-flex justify-content-center";
     d_flex.data = {};
-    container.className = "border border-secondary m-4 pt-2 pl-2 pr-2 text-center bg-dark";
-    table.className = "table-sm table-dark table-bordered container";
+    container.className = "border-secondary mt-4 text-center bg-dark";
+    table.className = "table-sm table-dark table-bordered";
     h3.innerHTML = "Trend";
     h3.className = "text-secondary";
     container.append(h3);
-    for (var col of [["Hour", 5], ["Trend", 100]]) {
+    for (var col of [["Hour", 5], ["Trend", 500]]) {
         var td = document.createElement("td");
         var textarea = document.createElement("textarea");
         td.append(textarea);
@@ -344,7 +333,7 @@ function planning_section(columns, values) {
     var trh = document.createElement("tr");
     var trd = document.createElement("tr");
     container.className = "text-center bg-dark";
-    table.className = "table-sm table-dark table-bordered container";
+    table.className = "table-sm table-dark table-bordered w-100";
     for (var i = 0; i < columns.length; i++) {
         var th = document.createElement("th");
         th.innerHTML = columns[i];
@@ -498,7 +487,7 @@ function request_for_shift_plan(data, result_div) {
     form.append("Total HC", data["Total HC"].innerHTML);
     form.append("Shift", data["Shift"].innerHTML);
     form.append("Days", data["Days"].value);
-    form.append("Off Day", data["Off Day"].innerHTML);
+    form.append("Off", data["Off"].innerHTML);
     fetch("/wfm", {
         method: "POST",
         body: form
@@ -678,18 +667,8 @@ function range_form(parent, columns, main_table, plan_section) {
     }
     table.append(tr);
     d_flex.data = {};
-    table.className = "table table-dark table-bordered container";
-    table_div.className = "m-4";
-    function query(media) {
-        if (media.matches) {
-            container.className = "border border-secondary text-center bg-dark";
-        } else {
-            container.className = "border border-secondary pt-2 pl-2 pr-2 text-center bg-dark";
-        }
-    }
-    var media = window.matchMedia("(max-width: 600px)")
-    query(media)
-    media.addListener(query)
+    table.className = "table table-dark table-bordered";
+    container.className = "border-secondary mb-4 text-center bg-dark";
     container.append(hc);
     result.className = "btn-outline-secondary";
     var tr = document.createElement("tr");
@@ -711,9 +690,9 @@ function range_form(parent, columns, main_table, plan_section) {
         v.oninput = function (e) {
             var volume = parseInt(d_flex.data["Volume"].value);
             var aht = parseFloat(d_flex.data["AHT"].value);
-            var shrinkage = parseFloat(d_flex.data["Shrinkage"].value);
+            var loss = parseFloat(d_flex.data["Loss"].value);
             var work_hour = parseFloat(d_flex.data["Work Hour"].value);
-            var off_day = parseInt(d_flex.data["Off Day"].value);
+            var off = parseInt(d_flex.data["Off"].value);
             var ur = parseFloat(hc.data["Utilization Rate"].innerHTML);
             if (parseFloat(hc.data["sum"]) > 0) {
                 hc.data["Utilization Rate"].innerHTML = Math.round((work_hour - parseFloat(hc.data["sum"])) / work_hour * 100) / 100;
@@ -721,9 +700,9 @@ function range_form(parent, columns, main_table, plan_section) {
                 hc.data["Utilization Rate"].innerHTML = 1;
                 ur = 1;
             }
-            var daily_hc = volume * aht / (work_hour * 3600 * (1 - shrinkage) * ur * (7 - off_day) / 7);
+            var daily_hc = volume * aht / (work_hour * 3600 * (1 - loss) * ur * (7 - off) / 7);
             hc.data["Daily HC"].innerHTML = parseInt(daily_hc);
-            hc.data["Total HC"].innerHTML = parseInt(daily_hc * (7 / (7 - off_day)) / (1 - shrinkage));
+            hc.data["Total HC"].innerHTML = parseInt(daily_hc * (7 / (7 - off)) / (1 - loss));
             hc.data["d_flex"] = d_flex;
         }
     }
@@ -862,7 +841,7 @@ function analyze(hc, trend, input, offline_activity, main_table, plan_section) {
     empty(main_table, "Shift");
     var volume = parseInt(input["Volume"].value);
     var aht = parseFloat(input["AHT"].value);
-    var shrinkage = parseFloat(input["Shrinkage"].value);
+    var loss = parseFloat(input["Loss"].value);
     var work_hour = parseFloat(input["Work Hour"].value);
     var daily_hc = parseInt(hc["Daily HC"].innerHTML);
     var trend = trend["Trend"].value.split("\n").map(i => parseFloat(i.replace(",", ".")));
@@ -897,7 +876,7 @@ function analyze(hc, trend, input, offline_activity, main_table, plan_section) {
     plan_section.data["Total HC"].innerHTML = hc["Total HC"].innerHTML;
     plan_section.data["Shift"].innerHTML = main_table.data["Shift"].value;
     plan_section.data["Work Hour"] = work_hour;
-    plan_section.data["Off Day"].innerHTML = input["Off Day"].value;
+    plan_section.data["Off"].innerHTML = input["Off"].value;
     plan_section.data["Activities"] = activities;
     plan_section.data["Needs"] = needs;
     plan_section.data["Trend"] = trend;
@@ -938,7 +917,7 @@ function change_values(e, main_table, results, needs, volumes, aht, trend, plan_
     }
 
     plan_section.data["Shift"].innerHTML = main_table.data["Shift"].value;
-    plan_section.data["Off Day"].innerHTML = input["Off Day"].value;
+    plan_section.data["Off"].innerHTML = input["Off"].value;
     main_table.data["chart"].data.datasets[0].data = all["Need"];
     main_table.data["chart"].data.datasets[1].data = all["Actual"];
     main_table.data["chart"].update();
@@ -972,20 +951,11 @@ function create_table(parent, columns, plan_section) {
     var select_div = document.createElement("div");
     table_div.style.overflowX = "scroll";
     var state = {"value": false};
-    function query(media) {
-        if (media.matches) {
-            container.className = "border border-secondary text-center bg-dark";
-        } else {
-            container.className = "border border-secondary pt-4 pl-4 pr-4 text-center bg-dark";
-        }
-    }
-    var media = window.matchMedia("(max-width: 600px)")
-    query(media)
-    media.addListener(query)
-    table.className = "table-sm table-dark table-bordered container";
+    container.className = "border-secondary text-center bg-dark";
+    table.className = "table-sm table-dark table-bordered w-100";
     d_flex.data = {};
     var _table = document.createElement("table");
-    _table.className = "table-sm table-dark table container"
+    _table.className = "table-sm table-dark table"
     var _tr = document.createElement("tr");
     for (var i of ["N Shift", "Shift"]) {
         var th = document.createElement("th");
@@ -1033,7 +1003,7 @@ function create_table(parent, columns, plan_section) {
     table_div.append(table);
     var canvas = document.createElement("canvas");
     canvas.id = "canvas";
-    canvas.className = "my-4 p-4 border border-secondary table-dark rounded";
+    canvas.className = "my-4 p-4 table-dark";
     d_flex.data["canvas"] = canvas;
     d_flex.data["container"] = container;
     container.append(table_div);
@@ -1083,7 +1053,7 @@ function create_table(parent, columns, plan_section) {
 
 function run() {
     var planning = planning_section(
-        columns=["Total HC", "Shift", "Days", "Off Day"],
+        columns=["Total HC", "Shift", "Days", "Off"],
         values=[]
     );
     var analysis = create_table(
@@ -1106,9 +1076,9 @@ function run() {
         columns={
             "Volume": {"min": 0, "max": 1000000, "step": 1, "type": "number"},
             "AHT": {"min": 0, "max": 360, "step": .01, "type": "number"},
-            "Shrinkage": {"min": 0, "max": 1, "step": .01, "type": "number"},
+            "Loss": {"min": 0, "max": 1, "step": .01, "type": "number"},
             "Work Hour": {"min": 0, "max": 24, "step": .25, "type": "number"},
-            "Off Day": {"min": 0, "max": 7, "step": 1, "type": "number"},
+            "Off": {"min": 0, "max": 7, "step": 1, "type": "number"},
         },
         main_table=analysis,
         plan_section=planning

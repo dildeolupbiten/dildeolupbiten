@@ -6,10 +6,6 @@ a, button {
     border-radius: 50%;
 }
 
-.article-group {
-    padding: 10px;
-}
-
 .article-author-info {
     display: inline-block;
     vertical-align:middle;
@@ -48,6 +44,21 @@ a:hover {
     .article-group {
         padding: 0px;
         padding-bottom: 10px;
+    }
+    #header {
+        height: 10rem;
+    }
+    #maincontent {
+        margin-top: 10rem;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    #header {
+        height: 50px;
+    }
+    #maincontent {
+        margin-top: 50px;
     }
 }
 

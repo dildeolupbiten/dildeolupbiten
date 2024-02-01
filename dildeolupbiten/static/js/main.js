@@ -14,7 +14,7 @@ class Card {
     header() {
         var container = document.createElement("div");
         container.id = `card-header-${this.secondary_id}`;
-        container.className = "card card-footer container text-center bg-dark border border-secondary";
+        container.className = "card card-footer text-center bg-dark border border-secondary mt-4";
         container.style.paddingBottom = "25px";
         var d_flex_justified = document.createElement("div");
         d_flex_justified.className = "d-flex justify-content-between";
@@ -60,7 +60,7 @@ class Card {
     body() {
         var container = document.createElement("div");
         container.id = `card-body-${this.secondary_id}`;
-        container.className = "card-body container text-left text-light";
+        container.className = "card-body text-left text-light";
         container.style.backgroundColor = "black";
         container.style.overflow = "auto";
         container.style.height = "20rem";
@@ -93,9 +93,9 @@ class Card {
         var container = document.createElement("div");
         container.id = `card-footer-${this.secondary_id}`;
         if (this.secondary_id == `${this.primary_id}-secondary`) {
-            container.className = "card card-footer container text-center bg-dark border-left border-right border-secondary";
+            container.className = "card card-footer text-center bg-dark border-dark";
         } else {
-            container.className = "card card-footer container text-center bg-dark border border-secondary";
+            container.className = "card card-footer text-center bg-dark border-bottom border-left border-right border-secondary";
         }
         container.style.paddingBottom = "25px";
         var text_center = document.createElement("div");
@@ -220,6 +220,7 @@ class Article {
         var author_url = document.createElement("a");
         author_url.setAttribute("href", this.author_href);
         author_url.innerHTML = this.author_name;
+        author_url.style.fontSize = "12px";
         var br = document.createElement("br");
         var small = document.createElement("small");
         small.setAttribute("class", "text-secondary");
@@ -265,9 +266,9 @@ class Article {
         a.setAttribute("href", this.article_href);
         for (var i of [["h4", "#000000", this.title]]) {
             var item = document.createElement(i[0]);
-            item.setAttribute("class", "article-more");
+            item.setAttribute("class", "article-more p-1");
             item.style.color = i[1];
-            item.style.fontSize = "14px";
+            item.style.fontSize = "12px";
             item.innerHTML = i[2];
             a.append(item);
         }

@@ -13,7 +13,7 @@ async def index():
         hc = int(request.form["Total HC"])
         shift = list(map(int, request.form["Shift"].split(",")))
         days = int(request.form["Days"])
-        off = int(request.form["Off Day"])
+        off = int(request.form["Off"])
         shift_plan = ShiftPlan(hc=hc, shifts=shift, days=days, off=off)
         await shift_plan.build()
         if shift_plan.error:

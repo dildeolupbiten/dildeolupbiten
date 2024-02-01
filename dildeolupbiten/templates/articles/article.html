@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="p-4 text-center bg-dark border-top border-bottom border-secondary" style="color: #999999;"><h2>{{ article.title }}</h2></div>
-    <div id="main-div" class="w-100 mt-0 border-left py-4 border-right border-bottom border-secondary bg-dark" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); background-repeat: no-repeat; background-size: cover;">
-        <div id="main-container" class="d-flex container mt-0 border-top border-left border-right border-secondary rounded bg-dark">
-            <article id="article" class="container w-100 bg-dark text-light">
+    <div class="p-4 text-center border-top bg-dark border-secondary" style="color: #999999;"><h2>{{ article.title }}</h2></div>
+    <div id="main-div" class="w-100 bg-dark">
+        <div id="main-container" class="rounded bg-dark">
+            <article id="article" class="w-100 bg-dark text-light">
                 <div class="article-group bg-dark rounded">
-                    <div class="justify-content-between">
+                    <div class="d-inline justify-content-between">
                         <div class="d-inline">
                             <div class="article-author-info">
                                 <img class="rounded" src="{{ url_for('static', filename='images/' + article.user.image) }}">
@@ -17,19 +17,14 @@
                             </div>
                         </div>
                         {% if article.user == current_user %}
-                            <div class="d-inline float-right">
+                            <div class="d-inline float-right mt-3 mr-2">
                                 <a class="btn btn-outline-secondary" href="{{ url_for('articles.update', article_title=article.title) }}">Update</a>
                                 <a class="btn btn-outline-secondary" href="{{ url_for('articles.delete_article', article_title=article.title) }}">Delete</a>
                             </div>
                         {% endif %}
                     </div>
                     <div class="article-group bg-dark text-light">
-                        <img style="height: 25%; width: 100%;" class="rounded" src="{{ article.image }}">
-                    </div>
-                    <div class="article-group bg-dark text-light">
-                        <h2 style="color: #000000;" class="article-more"><b>{{ article.title }}</b></h2>
-                        <p style="color: #666666;" class="article-more">{{ article.category }}</p>
-                        <div id="article.content" class="p-4 rounded border border-secondary" style="height: 30rem; overflow: auto; background-color: black;">
+                        <div id="article.content" class="p-4 border-secondary" style="background-color: black;">
                             {{ HTMLCodeFormat(article.content).highlight()|safe }}
                         </div>
                     </div>

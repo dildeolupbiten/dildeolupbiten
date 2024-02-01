@@ -1,5 +1,5 @@
 <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;"><h2>{{ title }}</h2></div>
-<div class="d-flex justify-content-center border border-secondary w-100" style="background-image: URL({{ url_for('static', filename='images/bg.svg') }}); overflow:scroll; height: 40rem;">
+<div class="d-flex justify-content-center w-100" style="background: black; overflow:auto; height: 40rem;">
     <div class="container row justify-content-center align-self-center py-4 w-100">
         {% if columns %}
             {% if title in ["Create Article", "Update Article"] %}
@@ -59,3 +59,4 @@
         {% endif %}
     </div>
 </div>
+
