@@ -24,7 +24,7 @@
                         {% endif %}
                     </div>
                     <div class="article-group bg-dark text-light">
-                        <div id="article.content" class="p-4 border-secondary" style="background-color: black;">
+                        <div id="article.content" class="p-4 border-secondary" style="background-color: black; overflow-X: scroll;">
                             {{ HTMLCodeFormat(article.content).highlight()|safe }}
                         </div>
                     </div>

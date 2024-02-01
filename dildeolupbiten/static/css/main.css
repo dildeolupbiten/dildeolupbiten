@@ -26,6 +26,7 @@ body {
 
 * {
   font-family: monospace;
+  font-size: 14px;
 }
 
 a {
@@ -39,7 +40,7 @@ a:hover {
 
 @media only screen and (max-width: 600px) {
     * {
-        font-size: 11px;
+        font-size: 10px;
     }
     .article-group {
         padding: 0px;
@@ -50,15 +51,6 @@ a:hover {
     }
     #maincontent {
         margin-top: 10rem;
-    }
-}
-
-@media only screen and (min-width: 600px) {
-    #header {
-        height: 50px;
-    }
-    #maincontent {
-        margin-top: 50px;
     }
 }
 
