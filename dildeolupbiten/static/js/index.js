@@ -313,7 +313,7 @@ function trend_form() {
     }
     d_flex.data["Trend"].oninput = function (e) { control_row(e, result) };
     d_flex.data["Trend"].onpaste = function (e) { control_row(e, result) };
-    d_flex.data["Trend"].className = "bg-dark text-light form-control border border-secondary";
+    d_flex.data["Trend"].className = "bg-dark text-light border border-secondary form-control";
     container.append(table);
     result.className = "text-secondary";
     result.innerHTML = sum(d_flex.data["Trend"].value.split("\n").slice(0, -1).map(i => parseFloat(i)));
