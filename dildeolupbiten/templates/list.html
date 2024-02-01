@@ -3,7 +3,7 @@
     <div class="p-4 text-center bg-dark border-top border-secondary" style="color: #999999;">
         <h2>{% block header %}{% endblock header %}</h2>
     </div>
-        <div id="list" class="text-light" style="background: black; height: 40rem; overflow: auto;">
-            {% block init %}{% endblock init %}
-        </div>
+    <div id="list" class="text-light" style="background: black; height: 40rem; overflow: auto; align-items: center; display: flex;">
+        {% block init %}{% endblock init %}
+    </div>
 {% endblock content %}

@@ -74,7 +74,7 @@ class Card {
         input_group.className = "input-group mb-3 container rounded mx-auto w-100";
         var textarea = document.createElement("textarea");
         textarea.id = `textarea-${this.secondary_id}-update`;
-        textarea.className = "form-control";
+        textarea.className = "form-control bg-dark border-secondary text-light";
         var input_group_append = document.createElement("div");
         input_group_append.className = "input-group-append";
         var btn_save = document.createElement("button");
@@ -131,7 +131,7 @@ class Card {
         container.style.paddingTop = "5px";
         var textarea = document.createElement("textarea");
         textarea.id = `textarea-${this.secondary_id}`;
-        textarea.className = "form-control";
+        textarea.className = "form-control bg-dark border-secondary text-light";
         var input_group_append = document.createElement("div");
         input_group_append.className = "input-group-append";
         var btn_send = document.createElement("button");

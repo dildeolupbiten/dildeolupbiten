@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="p-4 text-center border-top bg-dark border-secondary" style="color: #999999;"><h2>{{ article.title }}</h2></div>
-    <div id="main-div" class="w-100 bg-dark">
-        <div id="main-container" class="rounded bg-dark">
+    <div id="main-div" class="w-100 bg-dark border-top border-secondary">
+        <div id="main-container" class="bg-dark">
             <article id="article" class="w-100 bg-dark text-light">
-                <div class="article-group bg-dark rounded">
-                    <div class="d-inline justify-content-between">
+                <div class="article-group bg-dark">
+                    <div class="d-inline justify-content-center">
                         <div class="d-inline">
                             <div class="article-author-info">
                                 <img class="rounded" src="{{ url_for('static', filename='images/' + article.user.image) }}">
@@ -22,6 +21,7 @@
                                 <a class="btn btn-outline-secondary" href="{{ url_for('articles.delete_article', article_title=article.title) }}">Delete</a>
                             </div>
                         {% endif %}
+                        <div class="pl-4" style="color: #999999;"><h3>{{ article.title }}</h3></div>
                     </div>
                     <div class="article-group bg-dark text-light">
                         <div id="article.content" class="p-4 border-secondary" style="background-color: black; overflow-X: scroll;">
