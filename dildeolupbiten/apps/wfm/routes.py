@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, Blueprint, request, json, Response
+from flask import render_template, Blueprint, request, json, Response, jsonify
 from dildeolupbiten.apps.wfm.shift_plan import ShiftPlan
 from dildeolupbiten.apps.wfm.break_plan import create_break_plans
 
 wfm = Blueprint("wfm", __name__)
+export = {}
 
 
 @wfm.route("/wfm", methods=["GET", "POST"])
 async def index():
+    global export
+    if "shift_plan" in request.args and export:
+        copy = export.copy()
+        export = {}
+        return copy
     if "shift" in request.form:
         hc = int(request.form["Total HC"])
         shift = list(map(int, request.form["Shift"].split(",")))
@@ -28,4 +34,7 @@ async def index():
         work_hour = json.loads(request.form["work_hour"])
         data = await create_break_plans(shift_plan, needs, activities, work_hour)
         return Response(json.dumps(data), 200)
+    elif "export" in request.form:
+        export = json.loads(request.form["export"])
+        return Response(json.dumps({}), 200)
     return render_template("apps/wfm/index.html", title="WFM")

@@ -366,15 +366,47 @@ function planning_section(columns, values) {
     var btn_break_plan = document.createElement("button");
     btn_break_plan.innerHTML = "Create Break Plan";
     btn_break_plan.className = "col-4 btn btn-dark border-secondary m-4 text-secondary";
+    var btn_export = document.createElement("button");
+    btn_export.innerHTML = "Get Plan(s) (JSON)";
+    btn_export.className = "col-4 btn btn-dark border-secondary m-4 text-secondary";
     button_div.append(btn_shift_plan);
     button_div.append(btn_break_plan);
+    button_div.append(btn_export);
     container.append(table_div);
     container.append(button_div);
     container.append(result_div);
     d_flex.append(container);
     btn_shift_plan.onclick = function (e) { request_for_shift_plan(d_flex.data, result_div) }
     btn_break_plan.onclick = function (e) { request_for_break_plan(d_flex.data, result_div) }
+    btn_export.onclick = function (e) {
+        request_for_export(d_flex.data);
+    }
     return d_flex;
+}
+
+function request_for_export(data) {
+    var plan = {"Shift Plan": data["plan"][0]};
+    if (!data["plan"]) {
+        alert("Create the shift plan first!");
+        return;
+    }
+    var url = "shift_plan=true";
+    if (data["break"]) {
+        plan["Break Plan"] = data["break"];
+        url += "&break_plan=true";
+    }
+    var form = new FormData();
+    form.append("export", JSON.stringify(plan));
+    fetch("/wfm", {
+        method: "POST",
+        body: form
+    })
+    .then(function(response) {
+        window.open("/wfm?" + url);
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
 }
 
 function request_for_break_plan(data, result_div) {

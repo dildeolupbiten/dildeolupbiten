@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+import warnings
 import numpy as np
 import pandas as pd
+
+warnings.filterwarnings("ignore")
 
 
 class ShiftPlan(pd.DataFrame):
