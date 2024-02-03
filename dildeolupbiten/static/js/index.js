@@ -385,23 +385,30 @@ function planning_section(columns, values) {
 }
 
 function request_for_export(data) {
-    var plan = {"Shift Plan": data["plan"][0]};
     if (!data["plan"]) {
         alert("Create the shift plan first!");
         return;
     }
     var url = "shift_plan=true";
+    var plan = {"Shift Plan": data["plan"][0]};
     if (data["break"]) {
         plan["Break Plan"] = data["break"];
         url += "&break_plan=true";
     }
     var form = new FormData();
-    form.append("export", JSON.stringify(plan));
+    form.append("plan", JSON.stringify(plan));
     fetch("/wfm", {
         method: "POST",
         body: form
     })
     .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error("Request failed.");
+        }
+    })
+    .then(function(plan) {
         window.open("/wfm?" + url);
     })
     .catch(function(error) {
